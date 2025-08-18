@@ -269,7 +269,10 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.status === 'success') {
         // Update counters
         updateColumnCounters();
-        cardElement.style.opacity = '1';
+        // Refresh page to update financial values
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
         
         // Show success message
         showNotification('Lead moved successfully!', 'success');

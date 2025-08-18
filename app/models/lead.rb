@@ -15,9 +15,10 @@ class Lead < ApplicationRecord
     contacted: 1,
     meeting: 2,
     offer: 3,
-    won: 4,
-    lost: 5,
-    followup: 6
+    negotiation: 4,
+    won: 5,
+    lost: 6,
+    followup: 7
   }
 
   def self.status_names_pl
@@ -26,6 +27,7 @@ class Lead < ApplicationRecord
       'contacted' => 'Kontakt',
       'meeting' => 'Spotkanie',
       'offer' => 'Oferta',
+      'negotiation' => 'Negocjacje',
       'won' => 'Wygrany',
       'lost' => 'Przegrany',
       'followup' => 'Follow-up'
