@@ -1,0 +1,251 @@
+<div class="max-w-7xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Raport tygodniowy
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        <%= @current_week_start.strftime("%d.%m.%Y") %> - <%= @current_week_end.strftime("%d.%m.%Y") %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Current Week Stats -->
+  <div class="mt-8">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Bieżący tydzień</h3>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- New Leads -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                👤
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Nowe leady
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    <%= @current_week_leads.count %>
+                  </div>
+                  <div class="ml-2 flex items-baseline text-sm font-semibold">
+                    <% change = @current_week_leads.count - @previous_week_leads.count %>
+                    <span class="<%= change >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <%= change >= 0 ? '+' : '' %><%= change %>
+                    </span>
+                    <span class="text-gray-500 ml-1">vs poprzedni tydzień</span>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Offers -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
+                📄
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Nowe oferty
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    <%= @current_week_offers.count %>
+                  </div>
+                  <div class="ml-2 flex items-baseline text-sm font-semibold">
+                    <% change = @current_week_offers.count - @previous_week_offers.count %>
+                    <span class="<%= change >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <%= change >= 0 ? '+' : '' %><%= change %>
+                    </span>
+                    <span class="text-gray-500 ml-1">vs poprzedni tydzień</span>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meetings -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
+                📅
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Spotkania
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    <%= @current_week_meetings.count %>
+                  </div>
+                  <div class="ml-2 flex items-baseline text-sm font-semibold">
+                    <% change = @current_week_meetings.count - @previous_week_meetings.count %>
+                    <span class="<%= change >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <%= change >= 0 ? '+' : '' %><%= change %>
+                    </span>
+                    <span class="text-gray-500 ml-1">vs poprzedni tydzień</span>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Revenue -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
+                💰
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Wartość ofert
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    <%= Money.new(@current_week_offers.sum(:total_cents), 'PLN').format %>
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overall Performance -->
+  <div class="mt-8">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Wyniki ogólne</h3>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-indigo-100 rounded-md flex items-center justify-center">
+                📊
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Konwersja lead → oferta
+                </dt>
+                <dd class="text-2xl font-semibold text-gray-900">
+                  <%= @leads_to_offers_rate %>%
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
+                ✅
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Akceptacja ofert
+                </dt>
+                <dd class="text-2xl font-semibold text-gray-900">
+                  <%= @offer_acceptance_rate %>%
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
+                💎
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Całkowita wartość
+                </dt>
+                <dd class="text-2xl font-semibold text-gray-900">
+                  <%= @total_value.format %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="mt-8">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Ostatnia aktywność</h3>
+    <div class="bg-white shadow rounded-lg">
+      <div class="p-6">
+        <div class="flow-root">
+          <ul class="-mb-8">
+            <% @current_week_leads.order(created_at: :desc).limit(5).each_with_index do |lead, index| %>
+              <li>
+                <div class="relative pb-8">
+                  <% unless index == 4 %>
+                    <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                  <% end %>
+                  <div class="relative flex items-start space-x-3">
+                    <div class="relative">
+                      <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600">👤</span>
+                      </div>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div>
+                        <div class="text-sm">
+                          <span class="font-medium text-gray-900">Nowy lead:</span>
+                          <span class="text-gray-900"><%= lead.full_name %></span>
+                        </div>
+                        <p class="mt-0.5 text-sm text-gray-500">
+                          <%= time_ago_in_words(lead.created_at) %> temu
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

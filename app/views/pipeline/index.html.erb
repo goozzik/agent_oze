@@ -1,0 +1,401 @@
+<% content_for :wide_layout, true %>
+
+<div class="max-w-full">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Pipeline Sprzedaży
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Zarządzaj leadami metodą Kanban - przeciągaj karty między kolumnami
+      </p>
+    </div>
+    
+    <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <%= link_to "📊 Raporty", reports_weekly_path, 
+          class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+      <%= link_to "📋 Lista leadów", leads_path, 
+          class: "bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700" %>
+      <%= link_to "➕ Nowy lead", new_lead_path, 
+          class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700" %>
+    </div>
+  </div>
+
+  <!-- Pipeline Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="text-2xl">💰</div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Wartość w ofercie</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= number_to_currency(@total_value['offer'], unit: "zł", precision: 0) %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="text-2xl">🤝</div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">W negocjacjach</dt>
+              <dd class="text-lg font-medium text-gray-900"><%= number_to_currency(@total_value['negotiation'], unit: "zł", precision: 0) %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="text-2xl">🎉</div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">Wygrane</dt>
+              <dd class="text-lg font-medium text-green-600"><%= number_to_currency(@total_value['won'], unit: "zł", precision: 0) %></dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Board -->
+    <div class="flex gap-6 overflow-x-auto pb-4" id="pipeline-board">
+      
+      <!-- Fresh Leads -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="fresh" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
+            Nowe
+            <span class="ml-2 bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['fresh'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="fresh">
+          <% @pipeline_data['fresh'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Contacted -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="contacted" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
+            Kontakt
+            <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['contacted'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="contacted">
+          <% @pipeline_data['contacted'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Meeting Scheduled -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="meeting" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-purple-400 rounded-full mr-2"></span>
+            Spotkanie
+            <span class="ml-2 bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['meeting'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="meeting">
+          <% @pipeline_data['meeting'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Offer Sent -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="offer" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span>
+            Oferta
+            <span class="ml-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['offer'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="offer">
+          <% @pipeline_data['offer'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Negotiation -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="negotiation" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-orange-400 rounded-full mr-2"></span>
+            Negocjacje
+            <span class="ml-2 bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['negotiation'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="negotiation">
+          <% @pipeline_data['negotiation'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Follow-up -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="followup" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-indigo-400 rounded-full mr-2"></span>
+            Follow-up
+            <span class="ml-2 bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['followup'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="followup">
+          <% @pipeline_data['followup'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Won -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="won" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
+            Wygrane
+            <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['won'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="won">
+          <% @pipeline_data['won'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Lost -->
+      <div class="pipeline-column bg-white rounded-lg shadow-sm p-4 flex-shrink-0" data-status="lost" style="width: 220px;">
+        <div class="pipeline-header mb-4">
+          <h3 class="font-semibold text-gray-900 flex items-center">
+            <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span>
+            Przegrane
+            <span class="ml-2 bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+              <%= @pipeline_data['lost'].count %>
+            </span>
+          </h3>
+        </div>
+        <div class="pipeline-items space-y-3" data-status="lost">
+          <% @pipeline_data['lost'].each do |lead| %>
+            <%= render 'pipeline_card', lead: lead %>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+<!-- Drag and Drop JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const columns = document.querySelectorAll('.pipeline-items');
+  
+  columns.forEach(column => {
+    new Sortable(column, {
+      group: 'pipeline',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      
+      onEnd: function(evt) {
+        const leadId = evt.item.dataset.leadId;
+        const newStatus = evt.to.dataset.status;
+        const oldStatus = evt.from.dataset.status;
+        
+        if (newStatus !== oldStatus) {
+          updateLeadStatus(leadId, newStatus, evt.item, evt.from);
+        }
+      }
+    });
+  });
+  
+  function updateLeadStatus(leadId, newStatus, cardElement, oldColumn) {
+    // Show loading state
+    cardElement.style.opacity = '0.5';
+    
+    fetch(`/pipeline/${leadId}/update_status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        status: newStatus
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        // Update counters
+        updateColumnCounters();
+        cardElement.style.opacity = '1';
+        
+        // Show success message
+        showNotification('Lead moved successfully!', 'success');
+      } else {
+        // Revert the move
+        oldColumn.appendChild(cardElement);
+        cardElement.style.opacity = '1';
+        showNotification(data.message || 'Failed to update lead', 'error');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Revert the move
+      oldColumn.appendChild(cardElement);
+      cardElement.style.opacity = '1';
+      showNotification('Network error occurred', 'error');
+    });
+  }
+  
+  function updateColumnCounters() {
+    columns.forEach(column => {
+      const status = column.dataset.status;
+      const count = column.children.length;
+      const header = column.parentElement.querySelector('.pipeline-header span:last-child');
+      if (header) {
+        header.textContent = count;
+      }
+    });
+  }
+  
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-4 py-2 rounded-md text-white z-50 ${
+      type === 'success' ? 'bg-green-600' : 'bg-red-600'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+});
+</script>
+
+<style>
+.sortable-ghost {
+  opacity: 0.4;
+}
+
+.sortable-chosen {
+  transform: rotate(5deg);
+}
+
+.sortable-drag {
+  transform: rotate(5deg);
+}
+
+.pipeline-column {
+  min-height: 300px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pipeline-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  max-height: calc(70vh - 80px); /* wysokość kolumny minus header */
+}
+
+/* Custom scrollbar for pipeline columns - only visible when hovering */
+.pipeline-items {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.pipeline-items:hover {
+  scrollbar-color: #c1c1c1 transparent;
+}
+
+.pipeline-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pipeline-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pipeline-items::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 2px;
+}
+
+.pipeline-items:hover::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+}
+
+.pipeline-items::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Kanban board styling */
+#pipeline-board {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.pipeline-column {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .pipeline-column {
+    width: 200px !important;
+  }
+  
+  #pipeline-board {
+    padding: 15px;
+    gap: 12px;
+  }
+}
+</style>

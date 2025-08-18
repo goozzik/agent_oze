@@ -1,0 +1,186 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Pomiar: <%= @measurement.room_name %>
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Lead: <%= @lead.full_name %> • 
+        <%= Measurement::MEASUREMENT_TYPES[@measurement.measurement_type] %>
+      </p>
+    </div>
+    
+    <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <%= link_to "Edytuj", edit_lead_measurement_path(@lead, @measurement), 
+          class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+      <%= link_to "Wróć", @lead, 
+          class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Measurement details -->
+    <div class="lg:col-span-2">
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Szczegóły pomiaru</h3>
+          
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Typ pomiaru</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= Measurement::MEASUREMENT_TYPES[@measurement.measurement_type] %>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Nazwa pomieszczenia</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @measurement.room_name %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Długość</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @measurement.length %> m</dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Szerokość</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @measurement.width %> m</dd>
+            </div>
+            
+            <% if @measurement.height.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Wysokość</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @measurement.height %> m</dd>
+              </div>
+            <% end %>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Data pomiaru</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @measurement.created_at.strftime("%d.%m.%Y %H:%M") %>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Wykonał</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @measurement.measured_by.email %>
+              </dd>
+            </div>
+          </dl>
+          
+          <% if @measurement.notes.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Notatki</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= simple_format(@measurement.notes) %>
+              </dd>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculations sidebar -->
+    <div class="space-y-6">
+      <!-- Calculated values -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Obliczenia</h3>
+          
+          <div class="space-y-4">
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <dt class="text-sm font-medium text-blue-900">Powierzchnia</dt>
+              <dd class="mt-1 text-2xl font-bold text-blue-700">
+                <%= @measurement.total_area.round(2) %> m²
+              </dd>
+            </div>
+            
+            <% if @measurement.total_volume %>
+              <div class="bg-green-50 p-4 rounded-lg">
+                <dt class="text-sm font-medium text-green-900">Kubatura</dt>
+                <dd class="mt-1 text-2xl font-bold text-green-700">
+                  <%= @measurement.total_volume.round(2) %> m³
+                </dd>
+              </div>
+            <% end %>
+            
+            <div class="bg-orange-50 p-4 rounded-lg">
+              <dt class="text-sm font-medium text-orange-900">Zapotrzebowanie na moc</dt>
+              <dd class="mt-1 text-2xl font-bold text-orange-700">
+                <%= @measurement.heating_requirement %> kW
+              </dd>
+              <p class="text-xs text-orange-600 mt-1">
+                Wyliczone na podstawie 100W/m²
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recommendations -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Rekomendacje</h3>
+          
+          <div class="space-y-3 text-sm">
+            <% heating_req = @measurement.heating_requirement %>
+            <% if heating_req %>
+              <div class="border-l-4 border-blue-500 pl-3">
+                <p class="font-medium text-gray-900">Moc pieca</p>
+                <p class="text-gray-600">
+                  <%= (heating_req * 0.8).round(1) %> - <%= (heating_req * 1.2).round(1) %> kW
+                </p>
+                <p class="text-xs text-gray-500">
+                  Zalecana moc pieca (80-120% zapotrzebowania)
+                </p>
+              </div>
+              
+              <div class="border-l-4 border-green-500 pl-3">
+                <p class="font-medium text-gray-900">Typ pieca</p>
+                <p class="text-gray-600">
+                  <% if heating_req <= 8 %>
+                    Piec kompaktowy 6-8 kW
+                  <% elsif heating_req <= 15 %>
+                    Piec standardowy 10-15 kW
+                  <% elsif heating_req <= 25 %>
+                    Piec o wysokiej mocy 20-25 kW
+                  <% else %>
+                    System wielopiecowy lub piec przemysłowy
+                  <% end %>
+                </p>
+              </div>
+              
+              <div class="border-l-4 border-yellow-500 pl-3">
+                <p class="font-medium text-gray-900">Szacowany koszt</p>
+                <p class="text-gray-600">
+                  <%= number_to_currency((heating_req * 1200).round(-2), unit: "zł", precision: 0) %> - 
+                  <%= number_to_currency((heating_req * 1800).round(-2), unit: "zł", precision: 0) %>
+                </p>
+                <p class="text-xs text-gray-500">
+                  Z montażem (1200-1800 zł za kW)
+                </p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Akcje</h3>
+          <div class="space-y-3">
+            <%= link_to "🔥 Utwórz kalkulację", new_lead_boiler_calculation_path(@lead), 
+                class: "w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 block text-center" %>
+            <%= link_to "💰 Utwórz ofertę", new_lead_offer_path(@lead), 
+                class: "w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 block text-center" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

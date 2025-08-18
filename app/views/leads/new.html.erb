@@ -1,0 +1,45 @@
+<div class="max-w-2xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nowy Lead
+      </h2>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Wróć", leads_path, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= simple_form_for @lead, html: { class: "space-y-6" } do |form| %>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :first_name, label: "Imię", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+          <%= form.input :last_name, label: "Nazwisko", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :email, label: "Email", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+          <%= form.input :phone, label: "Telefon", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+        </div>
+
+        <%= form.input :address, as: :text, label: "Adres", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", rows: 3 } %>
+        <%= form.input :investment_address, as: :text, label: "Adres inwestycji", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", rows: 3 } %>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :source, label: "Źródło", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+          <%= form.input :product, label: "Produkt", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+        </div>
+
+        <%= form.input :notes, as: :text, label: "Notatki", input_html: { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", rows: 4 } %>
+
+        <%= form.input :photos, as: :file, label: "Zdjęcia", input_html: { multiple: true, class: "mt-1 block w-full" } %>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Anuluj", leads_path, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+          <%= form.submit "Utwórz Lead", class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

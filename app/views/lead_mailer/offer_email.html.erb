@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1e40af; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background: #f9f9f9; }
+    .offer-summary { background: white; padding: 15px; border-left: 4px solid #f59e0b; margin: 15px 0; }
+    .price-highlight { background: #1e40af; color: white; padding: 10px; text-align: center; font-size: 18px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Agent OZE</h1>
+      <h2>Oferta handlowa</h2>
+    </div>
+    
+    <div class="content">
+      <p>Dzień dobry <strong><%= @lead.full_name %></strong>,</p>
+      
+      <p>Dziękujemy za zainteresowanie naszymi piekami pelletowymi. Przesyłamy dedykowaną ofertę:</p>
+      
+      <div class="offer-summary">
+        <h3>Oferta nr <%= @offer.number %></h3>
+        <% if @offer.description.present? %>
+          <p><%= simple_format(@offer.description) %></p>
+        <% end %>
+        
+        <% if @offer.offer_items.any? %>
+          <h4>Pozycje oferty:</h4>
+          <ul>
+            <% @offer.offer_items.each do |item| %>
+              <li><%= item.name %> - <%= item.qty %> szt. × <%= item.unit_price %> = <%= item.total_price %></li>
+            <% end %>
+          </ul>
+        <% end %>
+        
+        <div class="price-highlight">
+          Wartość całkowita: <%= @offer.total %>
+        </div>
+      </div>
+      
+      <p><strong>Oferta zawiera:</strong></p>
+      <ul>
+        <li>✓ Piec pelletowy wysokiej jakości</li>
+        <li>✓ Profesjonalny montaż</li>
+        <li>✓ Uruchomienie i instruktaż</li>
+        <li>✓ Gwarancję producenta</li>
+        <li>✓ Serwis posprzedażny</li>
+      </ul>
+      
+      <p><strong>Warunki:</strong></p>
+      <ul>
+        <li>Oferta ważna 30 dni od daty wystawienia</li>
+        <li>Możliwość finansowania w atrakcyjnych ratach</li>
+        <li>Bezpłatny dojazd i wycena</li>
+      </ul>
+      
+      <p>W załączeniu znajdą Państwo szczegółową ofertę w formacie PDF.</p>
+      
+      <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f0f9ff; border-radius: 8px;">
+        <h3 style="color: #1e40af; margin-bottom: 15px;">🎯 Podejmij decyzję online</h3>
+        <p style="margin-bottom: 20px;">Kliknij poniższy przycisk, aby łatwo i szybko podjąć decyzję dotyczącą oferty:</p>
+        <a href="<%= customer_decision_offer_url(@offer) %>" 
+           style="background-color: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; display: inline-block;">
+          PODEJMIJ DECYZJĘ
+        </a>
+        <p style="font-size: 14px; color: #666; margin-top: 15px;">
+          ⏰ Prosimy o odpowiedź w ciągu 14 dni
+        </p>
+      </div>
+      
+      <p>W razie pytań jesteśmy do dyspozycji. Zapraszamy do kontaktu!</p>
+      
+      <p>Pozdrawiamy,<br>
+      Zespół Agent OZE</p>
+      
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        Agent OZE - Twój partner w ekologicznym ogrzewaniu<br>
+        Tel: +48 123 456 789 | Email: agent.oze@example.com
+      </p>
+    </div>
+  </div>
+</body>
+</html>

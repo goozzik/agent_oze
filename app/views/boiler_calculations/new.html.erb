@@ -1,0 +1,123 @@
+<div class="max-w-2xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nowa kalkulacja pieca
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Lead: <%= @lead.full_name %>
+      </p>
+    </div>
+  </div>
+
+  <%= simple_form_for [@lead, @boiler_calculation], html: { class: "bg-white shadow-sm rounded-lg" } do |f| %>
+    <div class="px-4 py-5 sm:p-6">
+      
+      <!-- Basic Information -->
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= f.input :heating_area, 
+              label: "Powierzchnia do ogrzania (m²)", 
+              input_html: { 
+                step: 0.1, 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                placeholder: "np. 120.5"
+              } %>
+          
+          <%= f.input :current_heating_type, 
+              label: "Obecny system grzewczy",
+              collection: BoilerCalculation.heating_types_for_select,
+              prompt: "Wybierz typ ogrzewania",
+              input_html: { 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+              } %>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= f.input :desired_power, 
+              label: "Pożądana moc (kW)", 
+              hint: "Zostanie wyliczona automatycznie na podstawie powierzchni",
+              input_html: { 
+                step: 0.1, 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                placeholder: "np. 12.0"
+              } %>
+          
+          <%= f.input :estimated_cost, 
+              label: "Szacowany koszt (PLN)", 
+              input_html: { 
+                step: 0.01, 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                placeholder: "np. 25000.00"
+              } %>
+        </div>
+        
+        <%= f.input :recommended_boiler, 
+            label: "Rekomendowany piec", 
+            hint: "Model i specyfikacja techniczna",
+            input_html: { 
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              placeholder: "np. Kostrzewa Pellets 15 kW"
+            } %>
+        
+        <%= f.input :calculation_notes, 
+            label: "Notatki do kalkulacji", 
+            hint: "Dodatkowe informacje, uwagi techniczne",
+            input_html: { 
+              rows: 4,
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              placeholder: "Uwagi dotyczące instalacji, specyficzne wymagania klienta..."
+            } %>
+      </div>
+    </div>
+
+    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 space-x-2">
+      <%= link_to "Anuluj", @lead, 
+          class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      <%= f.submit "Zapisz kalkulację", 
+          class: "bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+  <% end %>
+
+  <!-- Calculation Help -->
+  <div class="mt-8 bg-blue-50 border-l-4 border-blue-400 p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-blue-700">
+          <strong>Wskazówki do kalkulacji:</strong>
+        </p>
+        <ul class="text-sm text-blue-600 mt-1 list-disc list-inside">
+          <li>Podstawowe zapotrzebowanie: 100W na m² (dobrze izolowany dom)</li>
+          <li>Dla starszych budynków: 120-150W na m²</li>
+          <li>Piec pelletowy: sprawność 85-95%</li>
+          <li>Moc pieca powinna być 10-20% wyższa od obliczonego zapotrzebowania</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const heatingAreaInput = document.querySelector('#boiler_calculation_heating_area');
+  const desiredPowerInput = document.querySelector('#boiler_calculation_desired_power');
+  
+  if (heatingAreaInput && desiredPowerInput) {
+    heatingAreaInput.addEventListener('input', function() {
+      const area = parseFloat(this.value);
+      if (area && area > 0) {
+        // Calculate recommended power (100W per m²)
+        const recommendedPower = (area * 0.1).toFixed(1);
+        if (!desiredPowerInput.value) {
+          desiredPowerInput.value = recommendedPower;
+        }
+      }
+    });
+  }
+});
+</script>

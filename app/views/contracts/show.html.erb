@@ -1,0 +1,175 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Umowa <%= @contract.number %>
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Klient: <%= @lead.full_name %> • 
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+          <%= @contract.sent? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+          <%= @contract.sent? ? 'Wysłana' : 'Projekt' %>
+        </span>
+      </p>
+    </div>
+    
+    <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <% unless @contract.sent? %>
+        <%= button_to "📤 Wyślij umowę", send_contract_lead_contract_path(@lead, @contract), 
+            method: :post,
+            confirm: "Czy na pewno chcesz wysłać umowę do klienta?",
+            class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 border-0" %>
+      <% end %>
+      
+      <%= link_to "📄 Pobierz PDF", download_pdf_lead_contract_path(@lead, @contract), 
+          class: "bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700" %>
+      
+      <%= link_to "Wróć", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Contract details -->
+    <div class="lg:col-span-2">
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Szczegóły umowy</h3>
+          
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Numer umowy</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @contract.number %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Status</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @contract.sent? ? 'Wysłana' : 'Projekt' %>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Data utworzenia</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @contract.created_at.strftime("%d.%m.%Y %H:%M") %></dd>
+            </div>
+            
+            <% if @contract.sent_at %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Data wysłania</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @contract.sent_at.strftime("%d.%m.%Y %H:%M") %></dd>
+              </div>
+            <% end %>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Wartość umowy</dt>
+              <dd class="mt-1 text-lg font-semibold text-blue-600"><%= @contract.total_amount.format %></dd>
+            </div>
+            
+            <% if @contract.delivery_date %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Data realizacji</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @contract.delivery_date.strftime("%d.%m.%Y") %></dd>
+              </div>
+            <% end %>
+            
+            <% if @contract.payment_terms.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Warunki płatności</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @contract.payment_terms %></dd>
+              </div>
+            <% end %>
+            
+            <% if @contract.warranty_period.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Okres gwarancji</dt>
+                <dd class="mt-1 text-sm text-gray-900"><%= @contract.warranty_period %></dd>
+              </div>
+            <% end %>
+          </dl>
+          
+          <% if @contract.description.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Przedmiot umowy</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= simple_format(@contract.description) %></dd>
+            </div>
+          <% end %>
+          
+          <% if @contract.terms.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Dodatkowe warunki</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= simple_format(@contract.terms) %></dd>
+            </div>
+          <% end %>
+          
+          <% if @contract.special_conditions.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Warunki szczególne</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= simple_format(@contract.special_conditions) %></dd>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Customer info -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Dane klienta</h3>
+          <div class="space-y-3">
+            <div>
+              <p class="font-medium text-gray-900"><%= @lead.full_name %></p>
+              <p class="text-sm text-gray-500"><%= @lead.email %></p>
+              <p class="text-sm text-gray-500"><%= @lead.phone %></p>
+            </div>
+            
+            <% if @lead.address.present? %>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Adres</p>
+                <p class="text-sm text-gray-900"><%= @lead.address %></p>
+              </div>
+            <% end %>
+            
+            <% if @lead.investment_address.present? %>
+              <div>
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Adres inwestycji</p>
+                <p class="text-sm text-gray-900"><%= @lead.investment_address %></p>
+              </div>
+            <% end %>
+          </div>
+          
+          <div class="mt-4">
+            <%= link_to "Zobacz leada", @lead, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Akcje</h3>
+          <div class="space-y-3">
+            <% unless @contract.sent? %>
+              <%= button_to "📤 Wyślij do klienta", send_contract_lead_contract_path(@lead, @contract), 
+                  method: :post,
+                  confirm: "Czy na pewno chcesz wysłać umowę do klienta?",
+                  class: "w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-center border-0" %>
+            <% else %>
+              <div class="bg-green-50 p-3 rounded-md">
+                <p class="text-sm text-green-700">
+                  ✅ Umowa została wysłana <%= @contract.sent_at.strftime("%d.%m.%Y o %H:%M") %>
+                </p>
+              </div>
+            <% end %>
+            
+            <%= link_to "📄 Pobierz PDF", download_pdf_lead_contract_path(@lead, @contract), 
+                class: "w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 block text-center" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

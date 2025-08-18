@@ -1,0 +1,114 @@
+<div class="px-4 sm:px-6 lg:px-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-xl font-semibold text-gray-900">Leady</h1>
+      <p class="mt-2 text-sm text-gray-700">Lista wszystkich leadów w systemie</p>
+    </div>
+    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+      <%= link_to "Nowy Lead", new_lead_path, 
+          class: "inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700" %>
+    </div>
+  </div>
+
+  <!-- Filtry -->
+  <div class="mt-6 bg-white p-4 rounded-lg shadow">
+    <%= form_with url: leads_path, method: :get, local: true, class: "flex flex-wrap gap-4 items-end" do |form| %>
+      <div>
+        <%= form.label :status, "Status", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.select :status, options_for_select([
+          ['Wszystkie', ''],
+          ['Nowy', 'fresh'],
+          ['Skontaktowany', 'contacted'],
+          ['Spotkanie', 'meeting'],
+          ['Oferta', 'offer'],
+          ['Wygrany', 'won'],
+          ['Przegrany', 'lost'],
+          ['Follow-up', 'followup']
+        ], params[:status]), {}, { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" } %>
+      </div>
+      
+      <div>
+        <%= form.label :source, "Źródło", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field :source, value: params[:source], 
+            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm" %>
+      </div>
+      
+      <div>
+        <%= form.submit "Filtruj", class: "bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700" %>
+        <%= link_to "Wyczyść", leads_path, class: "ml-2 text-gray-600 hover:text-gray-800" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Tabela leadów -->
+  <div class="mt-8 flex flex-col">
+    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imię i nazwisko</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kontakt</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Źródło</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data utworzenia</th>
+                <th class="relative px-6 py-3"><span class="sr-only">Akcje</span></th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @leads.each do |lead| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900"><%= lead.full_name %></div>
+                    <div class="text-sm text-gray-500"><%= lead.product %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900"><%= lead.email %></div>
+                    <div class="text-sm text-gray-500"><%= lead.phone %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <%= lead.source %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                      <%= case lead.status
+                          when 'fresh' then 'bg-blue-100 text-blue-800'
+                          when 'contacted' then 'bg-yellow-100 text-yellow-800'
+                          when 'meeting' then 'bg-purple-100 text-purple-800'
+                          when 'offer' then 'bg-orange-100 text-orange-800'
+                          when 'won' then 'bg-green-100 text-green-800'
+                          when 'lost' then 'bg-red-100 text-red-800'
+                          when 'followup' then 'bg-indigo-100 text-indigo-800'
+                          else 'bg-gray-100 text-gray-800'
+                          end %>">
+                      <%= lead.status_pl %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= lead.created_at.strftime("%d.%m.%Y") %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                    <%= link_to "Zobacz", lead, class: "text-blue-600 hover:text-blue-900" %>
+                    <%= link_to "Edytuj", edit_lead_path(lead), class: "text-yellow-600 hover:text-yellow-900" %>
+                    <% if policy(lead).destroy? %>
+                      <%= link_to "Usuń", lead, method: :delete, 
+                          confirm: "Czy na pewno chcesz usunąć tego leada?",
+                          class: "text-red-600 hover:text-red-900" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+          
+          <% if @leads.empty? %>
+            <div class="text-center py-8">
+              <p class="text-gray-500">Brak leadów do wyświetlenia</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

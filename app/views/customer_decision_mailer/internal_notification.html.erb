@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Decyzja klienta - Agent OZE</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .alert { padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .alert-success { background-color: #d1fae5; border-left: 4px solid #10b981; }
+    .alert-danger { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+    .alert-warning { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+  </style>
+</head>
+<body>
+  <h2>🔔 Decyzja klienta: <%= @decision_type.upcase %></h2>
+  
+  <div class="alert alert-<%= case @decision_type
+                              when 'yes' then 'success'
+                              when 'no' then 'danger'  
+                              when 'maybe' then 'warning'
+                              end %>">
+    <strong>Klient podjął decyzję:</strong>
+    <%= case @decision_type
+        when 'yes' then '✅ TAK - Oferta zaakceptowana!'
+        when 'no' then '❌ NIE - Oferta odrzucona'
+        when 'maybe' then '🤔 MOŻE - Wymaga follow-up'
+        end %>
+  </div>
+
+  <h3>📋 Szczegóły</h3>
+  <ul>
+    <li><strong>Klient:</strong> <%= @lead.full_name %> (<%= @lead.email %>)</li>
+    <li><strong>Oferta:</strong> <%= @offer.number %></li>
+    <li><strong>Wartość:</strong> <%= @offer.total.format %></li>
+    <li><strong>Data decyzji:</strong> <%= @offer.decision_made_at.strftime("%d.%m.%Y %H:%M") %></li>
+  </ul>
+
+  <% if @offer.customer_response.present? %>
+    <h3>💬 Komentarz klienta</h3>
+    <div style="background-color: #f3f4f6; padding: 15px; border-radius: 6px;">
+      <%= simple_format(@offer.customer_response) %>
+    </div>
+  <% end %>
+
+  <h3>🎯 Następne kroki</h3>
+  <% case @decision_type %>
+  <% when 'yes' %>
+    <ul>
+      <li>🏆 <strong>Gratulacje! Oferta zaakceptowana</strong></li>
+      <li>📜 Przygotuj umowę dla klienta</li>
+      <li>📞 Skontaktuj się w ciągu 24h</li>
+      <li>💰 Zaktualizuj prowizje</li>
+    </ul>
+  <% when 'no' %>
+    <ul>
+      <li>😔 Oferta odrzucona</li>
+      <li>📝 Zaktualizuj status leada na "lost"</li>
+      <li>📊 Przeanalizuj przyczyny odrzucenia</li>
+      <li>🔄 Dodaj do bazy na przyszłość</li>
+    </ul>
+  <% when 'maybe' %>
+    <ul>
+      <li>⏰ Zaplanuj follow-up za 2 tygodnie</li>
+      <li>📞 Opcjonalny kontakt telefoniczny</li>
+      <li>📧 Monitoring statusu oferty</li>
+      <li>💡 Przygotuj dodatkowe argumenty</li>
+    </ul>
+  <% end %>
+
+  <p><a href="<%= lead_url(@lead) %>" style="background-color: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px;">Zobacz leada w systemie</a></p>
+
+  <hr>
+  <p><small>Automatyczna notyfikacja z systemu Agent OZE</small></p>
+</body>
+</html>

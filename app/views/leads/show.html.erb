@@ -1,0 +1,375 @@
+<div class="max-w-7xl mx-auto">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        <%= @lead.full_name %>
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        <%= @lead.product %> • 
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+          <%= case @lead.status
+              when 'fresh' then 'bg-blue-100 text-blue-800'
+              when 'contacted' then 'bg-yellow-100 text-yellow-800'
+              when 'meeting' then 'bg-purple-100 text-purple-800'
+              when 'offer' then 'bg-orange-100 text-orange-800'
+              when 'won' then 'bg-green-100 text-green-800'
+              when 'lost' then 'bg-red-100 text-red-800'
+              when 'followup' then 'bg-indigo-100 text-indigo-800'
+              else 'bg-gray-100 text-gray-800'
+              end %>">
+          <%= @lead.status_pl %>
+        </span>
+      </p>
+    </div>
+    
+    <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <!-- Status change buttons -->
+      <div class="relative inline-block text-left">
+        <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" id="status-menu">
+          Zmień status
+        </button>
+      </div>
+      
+      <%= link_to "Edytuj", edit_lead_path(@lead), class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+      <%= link_to "Wróć", leads_path, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Lead details -->
+    <div class="lg:col-span-2">
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Informacje o kliencie</h3>
+          
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Email</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.email %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Telefon</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.phone %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Adres</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.address %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Adres inwestycji</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.investment_address %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Źródło</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.source %></dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Data utworzenia</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= @lead.created_at.strftime("%d.%m.%Y %H:%M") %></dd>
+            </div>
+          </dl>
+          
+          <% if @lead.notes.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Notatki</dt>
+              <dd class="mt-1 text-sm text-gray-900"><%= simple_format(@lead.notes) %></dd>
+            </div>
+          <% end %>
+          
+          <% if @lead.lost_reason.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-red-500">Powód przegranej</dt>
+              <dd class="mt-1 text-sm text-red-900"><%= simple_format(@lead.lost_reason) %></dd>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Photos -->
+      <% if @lead.photos.present? %>
+        <div class="mt-6 bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Zdjęcia</h3>
+            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <% @lead.photos.each do |photo| %>
+                <div class="relative">
+                  <%= image_tag photo, class: "h-24 w-full object-cover rounded-lg" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <!-- Measurements section -->
+      <div class="mt-6 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Pomiary</h3>
+            <%= link_to "Nowy pomiar", new_lead_measurement_path(@lead), class: "text-blue-600 hover:text-blue-800 text-sm" %>
+          </div>
+          
+          <% if @lead.measurements.any? %>
+            <div class="space-y-4">
+              <% @lead.measurements.recent.each do |measurement| %>
+                <div class="border-l-4 border-green-500 pl-4 py-2">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="font-medium text-gray-900">
+                        📏 <%= measurement.room_name %> 
+                        <span class="text-sm text-gray-500">(<%= Measurement::MEASUREMENT_TYPES[measurement.measurement_type] %>)</span>
+                      </p>
+                      <p class="text-sm text-gray-600">
+                        <%= measurement.length %>m × <%= measurement.width %>m
+                        <% if measurement.height.present? %>
+                          × <%= measurement.height %>m
+                        <% end %>
+                      </p>
+                      <p class="text-sm text-blue-600">
+                        📐 <%= measurement.total_area.round(2) %>m²
+                        <% if measurement.total_volume %>
+                          • 📦 <%= measurement.total_volume.round(2) %>m³
+                        <% end %>
+                        • ⚡ <%= measurement.heating_requirement %>kW
+                      </p>
+                    </div>
+                    <div class="flex space-x-2">
+                      <%= link_to "Zobacz", [@lead, measurement], class: "text-xs text-blue-600 hover:text-blue-800" %>
+                      <%= link_to "Edytuj", edit_lead_measurement_path(@lead, measurement), class: "text-xs text-gray-500 hover:text-gray-700" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-gray-500 text-sm">Brak pomiarów. <%= link_to "Dodaj pierwszy pomiar", new_lead_measurement_path(@lead), class: "text-blue-600 hover:text-blue-800" %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Boiler Calculations section -->
+      <div class="mt-6 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Kalkulacje pieca</h3>
+            <%= link_to "Nowa kalkulacja", new_lead_boiler_calculation_path(@lead), class: "text-blue-600 hover:text-blue-800 text-sm" %>
+          </div>
+          
+          <% if @lead.boiler_calculations.any? %>
+            <div class="space-y-4">
+              <% @lead.boiler_calculations.recent.each do |calculation| %>
+                <div class="border-l-4 border-orange-500 pl-4 py-2">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="font-medium text-gray-900">
+                        🔥 <%= calculation.heating_area %>m² • <%= BoilerCalculation::HEATING_TYPES[calculation.current_heating_type] %>
+                      </p>
+                      <% if calculation.recommended_boiler.present? %>
+                        <p class="text-sm text-gray-600">
+                          🏭 <%= truncate(calculation.recommended_boiler, length: 40) %>
+                        </p>
+                      <% end %>
+                      <p class="text-sm text-blue-600">
+                        ⚡ <%= calculation.recommended_power_range %>
+                        <% if calculation.estimated_cost.present? %>
+                          • 💰 <%= number_to_currency(calculation.estimated_cost, unit: "zł", precision: 0) %>
+                        <% end %>
+                      </p>
+                      <% if calculation.efficiency_improvement %>
+                        <p class="text-sm text-green-600">
+                          📈 Poprawa efektywności: <%= calculation.efficiency_improvement %>
+                        </p>
+                      <% end %>
+                    </div>
+                    <div class="flex space-x-2">
+                      <%= link_to "Zobacz", [@lead, calculation], class: "text-xs text-blue-600 hover:text-blue-800" %>
+                      <%= link_to "Edytuj", edit_lead_boiler_calculation_path(@lead, calculation), class: "text-xs text-gray-500 hover:text-gray-700" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-gray-500 text-sm">Brak kalkulacji. <%= link_to "Dodaj pierwszą kalkulację", new_lead_boiler_calculation_path(@lead), class: "text-blue-600 hover:text-blue-800" %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Meetings section -->
+      <% if @lead.meetings.any? %>
+        <div class="mt-6 bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Spotkania</h3>
+              <%= link_to "Nowe spotkanie", new_lead_meeting_path(@lead), class: "text-blue-600 hover:text-blue-800 text-sm" %>
+            </div>
+            
+            <div class="space-y-4">
+              <% @lead.meetings.order(scheduled_at: :desc).each do |meeting| %>
+                <div class="border-l-4 border-blue-500 pl-4 py-2">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <p class="font-medium text-gray-900">
+                        <%= meeting.scheduled_at.strftime("%d.%m.%Y o %H:%M") %>
+                      </p>
+                      <p class="text-sm text-gray-600">📍 <%= meeting.location %></p>
+                      <% if meeting.notes.present? %>
+                        <p class="text-sm text-gray-500 mt-1"><%= truncate(meeting.notes, length: 100) %></p>
+                      <% end %>
+                    </div>
+                    <div class="flex space-x-2">
+                      <%= link_to "Edytuj", edit_lead_meeting_path(@lead, meeting), class: "text-xs text-gray-500 hover:text-gray-700" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Quick actions -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Szybkie akcje</h3>
+          <div class="space-y-3">
+            <%= link_to "📞 Umów spotkanie", new_lead_meeting_path(@lead), class: "w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 block text-center" %>
+            <%= link_to "📋 Dodaj pomiary", new_lead_measurement_path(@lead), class: "w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 block text-center" %>
+            <%= link_to "⚡ Kalkulacja mocy", new_lead_boiler_calculation_path(@lead), class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 block text-center" %>
+            <%= link_to "💰 Utwórz ofertę", new_lead_offer_path(@lead), class: "w-full bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 block text-center" %>
+            
+            <% if @lead.offers.where(status: 'accepted').any? %>
+              <%= link_to "📜 Utwórz umowę", new_lead_contract_path(@lead), class: "w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 block text-center" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Statystyki</h3>
+          <dl class="space-y-3">
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Pomiary</dt>
+              <dd class="text-sm font-medium text-gray-900"><%= @lead.measurements.count %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Kalkulacje</dt>
+              <dd class="text-sm font-medium text-gray-900"><%= @lead.boiler_calculations.count %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Spotkania</dt>
+              <dd class="text-sm font-medium text-gray-900"><%= @lead.meetings.count %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Oferty</dt>
+              <dd class="text-sm font-medium text-gray-900"><%= @lead.offers.count %></dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Zadania</dt>
+              <dd class="text-sm font-medium text-gray-900"><%= @lead.tasks.pending.count %>/<%= @lead.tasks.count %></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offers and Contracts Section -->
+  <% if @lead.offers.any? || @lead.contracts.any? || @lead.offers.where(status: 'accepted').any? %>
+    <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <!-- Offers -->
+      <% if @lead.offers.any? %>
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Oferty</h3>
+              <%= link_to "💰 Nowa oferta", new_lead_offer_path(@lead), class: "text-sm bg-orange-600 text-white px-3 py-1 rounded hover:bg-orange-700" %>
+            </div>
+            
+            <div class="space-y-3">
+              <% @lead.offers.order(created_at: :desc).each do |offer| %>
+                <div class="border rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <p class="font-medium text-gray-900"><%= offer.number %></p>
+                      <p class="text-sm text-gray-500"><%= offer.total.format %></p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                        <%= case offer.status
+                            when 'draft' then 'bg-gray-100 text-gray-800'
+                            when 'sent' then 'bg-blue-100 text-blue-800'
+                            when 'accepted' then 'bg-green-100 text-green-800'
+                            when 'rejected' then 'bg-red-100 text-red-800'
+                            else 'bg-gray-100 text-gray-800'
+                            end %>">
+                        <%= offer.status.humanize %>
+                      </span>
+                      <%= link_to "Zobacz", [offer.lead, offer], class: "text-blue-600 hover:text-blue-800 text-sm" %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Contracts -->
+      <% if @lead.contracts.any? || @lead.offers.where(status: 'accepted').any? %>
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Umowy</h3>
+              <% if @lead.offers.where(status: 'accepted').any? %>
+                <%= link_to "📜 Nowa umowa", new_lead_contract_path(@lead), class: "text-sm bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700" %>
+              <% end %>
+            </div>
+            
+            <% if @lead.contracts.any? %>
+              <div class="space-y-3">
+                <% @lead.contracts.order(created_at: :desc).each do |contract| %>
+                  <div class="border rounded-lg p-3">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="font-medium text-gray-900"><%= contract.number %></p>
+                        <p class="text-sm text-gray-500"><%= contract.total_amount.format %></p>
+                        <% if contract.delivery_date %>
+                          <p class="text-xs text-gray-400">Realizacja: <%= contract.delivery_date.strftime("%d.%m.%Y") %></p>
+                        <% end %>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                          <%= contract.sent? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                          <%= contract.sent? ? 'Wysłana' : 'Projekt' %>
+                        </span>
+                        <%= link_to "Zobacz", [contract.lead, contract], class: "text-blue-600 hover:text-blue-800 text-sm" %>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-gray-500 text-sm">
+                Brak umów. Oferta została zaakceptowana - 
+                <%= link_to "utwórz umowę", new_lead_contract_path(@lead), class: "text-indigo-600 hover:text-indigo-800" %>.
+              </p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

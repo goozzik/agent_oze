@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1e40af; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background: #f9f9f9; }
+    .meeting-details { background: white; padding: 15px; border-left: 4px solid #1e40af; margin: 15px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Agent OZE</h1>
+      <h2>Potwierdzenie spotkania</h2>
+    </div>
+    
+    <div class="content">
+      <p>Dzień dobry <strong><%= @lead.full_name %></strong>,</p>
+      
+      <p>Dziękujemy za zainteresowanie naszymi piekami pelletowymi. Potwierdzamy umówione spotkanie:</p>
+      
+      <div class="meeting-details">
+        <h3>Szczegóły spotkania:</h3>
+        <p><strong>Data i godzina:</strong> <%= @meeting.scheduled_at.strftime("%d.%m.%Y o %H:%M") %></p>
+        <p><strong>Miejsce:</strong> <%= @meeting.location %></p>
+        <% if @meeting.notes.present? %>
+          <p><strong>Notatki:</strong> <%= @meeting.notes %></p>
+        <% end %>
+      </div>
+      
+      <p>Podczas spotkania omówimy:</p>
+      <ul>
+        <li>Analizę potrzeb grzewczych</li>
+        <li>Pomiary i ocenę techniczną</li>
+        <li>Dobór odpowiedniego pieca pelletowego</li>
+        <li>Kwestie montażu i serwisu</li>
+        <li>Przygotowanie indywidualnej oferty</li>
+      </ul>
+      
+      <p>W razie potrzeby zmiany terminu prosimy o kontakt telefoniczny.</p>
+      
+      <p>Pozdrawiamy,<br>
+      Zespół Agent OZE</p>
+      
+      <hr>
+      <p style="font-size: 12px; color: #666;">
+        Agent OZE - Twój partner w ekologicznym ogrzewaniu<br>
+        Tel: +48 123 456 789 | Email: agent.oze@example.com
+      </p>
+    </div>
+  </div>
+</body>
+</html>

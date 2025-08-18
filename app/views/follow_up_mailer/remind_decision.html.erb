@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Przypomnienie o ofercie - Agent OZE</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .logo { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+    .tagline { font-size: 16px; opacity: 0.9; }
+    .content { background: white; padding: 30px; border: 1px solid #e5e7eb; }
+    .highlight-box { background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+    .offer-details { background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .button { display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 0; }
+    .button:hover { background: #059669; }
+    .attachments { background: #fef3c7; border: 1px solid #f59e0b; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .footer { background: #f3f4f6; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb; border-top: none; }
+    .contact-info { font-size: 14px; color: #6b7280; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🌿 Agent OZE</div>
+    <div class="tagline">Twój partner w ekologicznym ogrzewaniu</div>
+  </div>
+
+  <div class="content">
+    <h2>Dzień dobry <%= @lead.first_name %>,</h2>
+    
+    <p>Dzwonimy z przypomnieniem w sprawie naszej oferty na system pelletowy, którą otrzymali Państwo tydzień temu.</p>
+    
+    <div class="offer-details">
+      <h3>🔥 Przypomnienie oferty <%= @offer.number %></h3>
+      <p><strong>Wartość inwestycji:</strong> <%= @offer.total.format %></p>
+      <% if @offer.delivery_time.present? %>
+        <p><strong>Czas realizacji:</strong> <%= @offer.delivery_time %></p>
+      <% end %>
+      <% if @offer.warranty.present? %>
+        <p><strong>Gwarancja:</strong> <%= @offer.warranty %></p>
+      <% end %>
+    </div>
+
+    <div class="highlight-box">
+      <h3>💡 Czy mają Państwo dodatkowe pytania?</h3>
+      <p>Rozumiemy, że decyzja o inwestycji w ekologiczne ogrzewanie to ważny krok. Dlatego przygotowaliśmy dla Państwa dodatkowe materiały, które pomogą w podjęciu decyzji:</p>
+      
+      <ul>
+        <li><strong>📋 Katalog produktów</strong> - pełna specyfikacja dostępnych pieców pelletowych</li>
+        <li><strong>🏠 Nasze realizacje</strong> - przykłady instalacji u zadowolonych klientów</li>
+        <li><strong>🔧 Specyfikacja techniczna</strong> - szczegółowe informacje o montażu</li>
+      </ul>
+    </div>
+
+    <div class="attachments">
+      <h4>📎 Załączniki w tym emailu:</h4>
+      <p>W załączniku znajdą Państwo wszystkie dodatkowe materiały informacyjne, które pomogą w podjęciu ostatecznej decyzji.</p>
+    </div>
+
+    <p><strong>Dlaczego warto zdecydować się już teraz?</strong></p>
+    <ul>
+      <li>🎯 <strong>Indywidualna oferta</strong> przygotowana specjalnie dla Państwa</li>
+      <li>💰 <strong>Możliwość finansowania</strong> w atrakcyjnych ratach</li>
+      <li>🚀 <strong>Szybka realizacja</strong> przez doświadczony zespół</li>
+      <li>🛡️ <strong>Gwarancja jakości</strong> na produkty i usługi</li>
+      <li>🌱 <strong>Ekologia i oszczędności</strong> przez długie lata</li>
+    </ul>
+
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="<%= customer_decision_offer_url(@offer) %>" class="button">
+        💬 PODEJMIJ DECYZJĘ ONLINE
+      </a>
+    </div>
+
+    <p>Jeśli mają Państwo jakiekolwiek pytania lub chcieliby umówić się na dodatkowe spotkanie, proszę o kontakt:</p>
+    
+    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+      <p><strong>📞 Telefon:</strong> +48 123 456 789</p>
+      <p><strong>📧 Email:</strong> agent.oze@example.com</p>
+      <p><strong>⏰ Dostępność:</strong> Pon-Pt 8:00-18:00, Sob 9:00-14:00</p>
+    </div>
+
+    <p>Bardzo zależy nam na Państwa zadowoleniu i jesteśmy gotowi dostosować ofertę do Państwa potrzeb.</p>
+
+    <p>Serdecznie pozdrawiamy,<br>
+    <strong>Zespół Agent OZE</strong></p>
+  </div>
+
+  <div class="footer">
+    <div class="contact-info">
+      <strong>Agent OZE Sp. z o.o.</strong><br>
+      ul. Przykładowa 123, 00-000 Warszawa<br>
+      Tel: +48 123 456 789 | Email: agent.oze@example.com<br>
+      www.agent-oze.pl
+    </div>
+    <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
+      Ten email został wysłany automatycznie w ramach obsługi Państwa zapytania.
+    </p>
+  </div>
+</body>
+</html>

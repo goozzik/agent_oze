@@ -1,0 +1,192 @@
+<div class="max-w-4xl mx-auto">
+  <!-- Header -->
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Kalkulacja pieca
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Lead: <%= @lead.full_name %> • 
+        <%= @boiler_calculation.heating_area %>m² • 
+        <%= BoilerCalculation::HEATING_TYPES[@boiler_calculation.current_heating_type] %>
+      </p>
+    </div>
+    
+    <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <%= link_to "Edytuj", edit_lead_boiler_calculation_path(@lead, @boiler_calculation), 
+          class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+      <%= link_to "Wróć", @lead, 
+          class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Calculation details -->
+    <div class="lg:col-span-2">
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Szczegóły kalkulacji</h3>
+          
+          <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Powierzchnia do ogrzania</dt>
+              <dd class="mt-1 text-lg font-semibold text-gray-900">
+                <%= @boiler_calculation.heating_area %> m²
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Obecny system grzewczy</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= BoilerCalculation::HEATING_TYPES[@boiler_calculation.current_heating_type] %>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Pożądana moc</dt>
+              <dd class="mt-1 text-lg font-semibold text-blue-600">
+                <%= @boiler_calculation.desired_power %> kW
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Zalecany zakres mocy</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @boiler_calculation.recommended_power_range %>
+              </dd>
+            </div>
+            
+            <% if @boiler_calculation.estimated_cost.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Szacowany koszt</dt>
+                <dd class="mt-1 text-lg font-semibold text-green-600">
+                  <%= number_to_currency(@boiler_calculation.estimated_cost, unit: "zł", precision: 0) %>
+                </dd>
+              </div>
+            <% end %>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Data kalkulacji</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @boiler_calculation.created_at.strftime("%d.%m.%Y %H:%M") %>
+              </dd>
+            </div>
+            
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Utworzył</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @boiler_calculation.created_by.email %>
+              </dd>
+            </div>
+          </dl>
+          
+          <% if @boiler_calculation.recommended_boiler.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Rekomendowany piec</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= @boiler_calculation.recommended_boiler %>
+              </dd>
+            </div>
+          <% end %>
+          
+          <% if @boiler_calculation.calculation_notes.present? %>
+            <div class="mt-6">
+              <dt class="text-sm font-medium text-gray-500">Notatki kalkulacyjne</dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                <%= simple_format(@boiler_calculation.calculation_notes) %>
+              </dd>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Efficiency & Recommendations sidebar -->
+    <div class="space-y-6">
+      <!-- Efficiency improvement -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Poprawa efektywności</h3>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">
+              <%= @boiler_calculation.efficiency_improvement %>
+            </div>
+            <p class="text-sm text-gray-600">
+              oszczędności w porównaniu do obecnego systemu
+            </p>
+          </div>
+          
+          <div class="mt-4 text-xs text-gray-500">
+            <p>Wyliczone na podstawie przeciętnej sprawności systemów grzewczych</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Technical recommendations -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Rekomendacje techniczne</h3>
+          
+          <div class="space-y-3 text-sm">
+            <% power = @boiler_calculation.desired_power || 0 %>
+            
+            <div class="border-l-4 border-blue-500 pl-3">
+              <p class="font-medium text-gray-900">Typ pieca</p>
+              <p class="text-gray-600">
+                <% if power <= 8 %>
+                  Piec kompaktowy do małych pomieszczeń
+                <% elsif power <= 15 %>
+                  Piec standardowy do domów jednorodzinnych
+                <% elsif power <= 25 %>
+                  Piec o wysokiej mocy do większych budynków
+                <% else %>
+                  System wielopiecowy lub centralny
+                <% end %>
+              </p>
+            </div>
+            
+            <div class="border-l-4 border-green-500 pl-3">
+              <p class="font-medium text-gray-900">Zalecenia instalacyjne</p>
+              <p class="text-gray-600">
+                <% if @boiler_calculation.current_heating_type == 'coal' %>
+                  Modernizacja z węgla - wymiana komina może być konieczna
+                <% elsif @boiler_calculation.current_heating_type == 'electric' %>
+                  Znaczne oszczędności kosztów eksploatacji
+                <% elsif @boiler_calculation.current_heating_type == 'gas' %>
+                  Porównywalne koszty, wyższa ekologia
+                <% else %>
+                  Konsultacja z technikiem zalecana
+                <% end %>
+              </p>
+            </div>
+            
+            <div class="border-l-4 border-yellow-500 pl-3">
+              <p class="font-medium text-gray-900">Dodatkowe korzyści</p>
+              <ul class="text-gray-600 text-xs mt-1 space-y-1">
+                <li>• Automatyczny system podawania paliwa</li>
+                <li>• Czyste spalanie - mniejsze emisje</li>
+                <li>• Paliwo ekologiczne z biomasy</li>
+                <li>• Możliwość dotacji państwowych</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Akcje</h3>
+          <div class="space-y-3">
+            <%= link_to "💰 Utwórz ofertę", new_lead_offer_path(@lead), 
+                class: "w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 block text-center" %>
+            <%= link_to "📋 Dodaj pomiary", new_lead_measurement_path(@lead), 
+                class: "w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 block text-center" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

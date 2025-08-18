@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decyzja dotycząca oferty - Agent OZE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <style>
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full space-y-8">
+      
+      <!-- Header -->
+      <div class="text-center">
+        <div class="mx-auto h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+          <span class="text-3xl">🏠</span>
+        </div>
+        <h2 class="mt-6 text-3xl font-extrabold text-white">
+          Agent OZE
+        </h2>
+        <p class="mt-2 text-lg text-gray-200">
+          Decyzja dotycząca Państwa oferty
+        </p>
+      </div>
+
+      <!-- Offer Summary -->
+      <div class="bg-white rounded-lg shadow-xl p-6">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-semibold text-gray-900">Oferta <%= @offer.number %></h3>
+          <p class="text-gray-600">dla <%= @lead.full_name %></p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="font-medium text-gray-500">Wartość oferty:</span>
+              <div class="text-lg font-bold text-blue-600"><%= @offer.total.format %></div>
+            </div>
+            <div>
+              <span class="font-medium text-gray-500">Data wysłania:</span>
+              <div><%= @offer.sent_at.strftime("%d.%m.%Y") %></div>
+            </div>
+            <% if @offer.delivery_time %>
+              <div>
+                <span class="font-medium text-gray-500">Czas realizacji:</span>
+                <div><%= @offer.delivery_time %></div>
+              </div>
+            <% end %>
+            <% if @offer.warranty %>
+              <div>
+                <span class="font-medium text-gray-500">Gwarancja:</span>
+                <div><%= @offer.warranty %></div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <% if @offer.decision_made? %>
+          <!-- Decision Already Made -->
+          <div class="text-center">
+            <div class="mb-4">
+              <span class="inline-flex items-center px-4 py-2 rounded-full text-lg font-medium
+                <%= case @offer.decision_status
+                    when 'customer_yes' then 'bg-green-100 text-green-800'
+                    when 'customer_no' then 'bg-red-100 text-red-800'  
+                    when 'customer_maybe' then 'bg-yellow-100 text-yellow-800'
+                    else 'bg-gray-100 text-gray-800'
+                    end %>">
+                <%= case @offer.decision_status
+                    when 'customer_yes' then '✅ Oferta zaakceptowana'
+                    when 'customer_no' then '❌ Oferta odrzucona'
+                    when 'customer_maybe' then '🤔 Wymaga przemyślenia'
+                    else 'Decyzja podjęta'
+                    end %>
+              </span>
+            </div>
+            <p class="text-gray-600">
+              Decyzja została podjęta <%= @offer.decision_made_at.strftime("%d.%m.%Y o %H:%M") %>
+            </p>
+            <% if @offer.customer_response.present? %>
+              <div class="mt-4 bg-gray-50 rounded-lg p-4">
+                <p class="font-medium text-gray-700">Państwa komentarz:</p>
+                <p class="text-gray-600 mt-1"><%= simple_format(@offer.customer_response) %></p>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Decision Form -->
+          <div class="space-y-6">
+            <div class="text-center">
+              <h4 class="text-lg font-medium text-gray-900 mb-2">
+                Czy są Państwo zainteresowani realizacją tej oferty?
+              </h4>
+              <p class="text-gray-600">
+                Prosimy o podjęcie decyzji. W razie pytań jesteśmy do dyspozycji.
+              </p>
+            </div>
+
+            <%= form_with url: customer_decisions_offer_path(@offer), method: :post, local: true, class: "space-y-6" do |form| %>
+              
+              <!-- Decision Options -->
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <!-- YES -->
+                <label class="relative cursor-pointer">
+                  <%= form.radio_button :decision, 'yes', class: "sr-only peer" %>
+                  <div class="border-2 border-gray-200 rounded-lg p-6 text-center transition-all peer-checked:border-green-500 peer-checked:bg-green-50 hover:border-green-300">
+                    <div class="text-3xl mb-2">✅</div>
+                    <div class="font-semibold text-gray-900">TAK</div>
+                    <div class="text-sm text-gray-600">Akceptuję ofertę</div>
+                  </div>
+                </label>
+
+                <!-- MAYBE -->
+                <label class="relative cursor-pointer">
+                  <%= form.radio_button :decision, 'maybe', class: "sr-only peer" %>
+                  <div class="border-2 border-gray-200 rounded-lg p-6 text-center transition-all peer-checked:border-yellow-500 peer-checked:bg-yellow-50 hover:border-yellow-300">
+                    <div class="text-3xl mb-2">🤔</div>
+                    <div class="font-semibold text-gray-900">MOŻE</div>
+                    <div class="text-sm text-gray-600">Potrzebuję czasu</div>
+                  </div>
+                </label>
+
+                <!-- NO -->
+                <label class="relative cursor-pointer">
+                  <%= form.radio_button :decision, 'no', class: "sr-only peer" %>
+                  <div class="border-2 border-gray-200 rounded-lg p-6 text-center transition-all peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-red-300">
+                    <div class="text-3xl mb-2">❌</div>
+                    <div class="font-semibold text-gray-900">NIE</div>
+                    <div class="text-sm text-gray-600">Nie jestem zainteresowany/a</div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Optional Comment -->
+              <div>
+                <%= form.text_area :customer_response, 
+                    placeholder: "Dodatkowe uwagi lub pytania (opcjonalne)...",
+                    rows: 4,
+                    class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="text-center">
+                <%= form.submit "Wyślij odpowiedź", 
+                    class: "bg-blue-600 text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+              </div>
+            <% end %>
+
+            <!-- Deadline Info -->
+            <% if @offer.decision_deadline %>
+              <div class="text-center text-sm text-gray-500">
+                <% if @offer.decision_overdue? %>
+                  ⚠️ Termin odpowiedzi minął <%= @offer.decision_deadline.strftime("%d.%m.%Y") %>
+                <% elsif @offer.days_until_decision_deadline <= 3 %>
+                  ⏰ Prosimy o odpowiedź do <%= @offer.decision_deadline.strftime("%d.%m.%Y") %> 
+                  (<%= @offer.days_until_decision_deadline %> dni)
+                <% else %>
+                  📅 Termin odpowiedzi: <%= @offer.decision_deadline.strftime("%d.%m.%Y") %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="bg-white bg-opacity-90 rounded-lg p-6 text-center">
+        <h4 class="font-semibold text-gray-900 mb-2">Masz pytania?</h4>
+        <p class="text-gray-600 text-sm mb-3">Skontaktuj się z nami</p>
+        <div class="space-y-1 text-sm">
+          <div>📞 <strong>Tel:</strong> +48 123 456 789</div>
+          <div>✉️ <strong>Email:</strong> biuro@agent-oze.pl</div>
+          <div>🌐 <strong>Web:</strong> www.agent-oze.pl</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+AGENT OZE - Przypomnienie o ofercie
+
+Dzień dobry <%= @lead.first_name %>,
+
+Dzwonimy z przypomnieniem w sprawie naszej oferty na system pelletowy, którą otrzymali Państwo tydzień temu.
+
+PRZYPOMNIENIE OFERTY <%= @offer.number %>
+Wartość inwestycji: <%= @offer.total.format %>
+<% if @offer.delivery_time.present? %>Czas realizacji: <%= @offer.delivery_time %><% end %>
+<% if @offer.warranty.present? %>Gwarancja: <%= @offer.warranty %><% end %>
+
+CZY MAJĄ PAŃSTWO DODATKOWE PYTANIA?
+
+Rozumiemy, że decyzja o inwestycji w ekologiczne ogrzewanie to ważny krok. Dlatego przygotowaliśmy dla Państwa dodatkowe materiały w załączniku:
+
+• Katalog produktów - pełna specyfikacja dostępnych pieców pelletowych
+• Nasze realizacje - przykłady instalacji u zadowolonych klientów  
+• Specyfikacja techniczna - szczegółowe informacje o montażu
+
+DLACZEGO WARTO ZDECYDOWAĆ SIĘ JUŻ TERAZ?
+
+• Indywidualna oferta przygotowana specjalnie dla Państwa
+• Możliwość finansowania w atrakcyjnych ratach
+• Szybka realizacja przez doświadczony zespół
+• Gwarancja jakości na produkty i usługi
+• Ekologia i oszczędności przez długie lata
+
+PODEJMIJ DECYZJĘ ONLINE:
+<%= customer_decision_offer_url(@offer) %>
+
+KONTAKT:
+Telefon: +48 123 456 789
+Email: agent.oze@example.com
+Dostępność: Pon-Pt 8:00-18:00, Sob 9:00-14:00
+
+Bardzo zależy nam na Państwa zadowoleniu i jesteśmy gotowi dostosować ofertę do Państwa potrzeb.
+
+Serdecznie pozdrawiamy,
+Zespół Agent OZE
+
+---
+Agent OZE Sp. z o.o.
+ul. Przykładowa 123, 00-000 Warszawa
+Tel: +48 123 456 789 | www.agent-oze.pl

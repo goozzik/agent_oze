@@ -1,0 +1,186 @@
+<% content_for :title, "Umowa #{@contract.number}" %>
+
+<div class="header">
+  <div class="company-info">
+    <div class="logo-section">
+      <h1>Agent OZE</h1>
+      <p>Profesjonalne rozwiązania energetyczne</p>
+    </div>
+    <div class="contact-info">
+      <strong>Agent OZE Sp. z o.o.</strong><br>
+      ul. Przykładowa 123<br>
+      00-000 Warszawa<br>
+      Tel: +48 123 456 789<br>
+      Email: biuro@agent-oze.pl<br>
+      NIP: 123-456-78-90<br>
+      REGON: 123456789
+    </div>
+  </div>
+</div>
+
+<div class="document-info">
+  <h2>UMOWA nr <%= @contract.number %></h2>
+  <div class="two-columns">
+    <div class="column">
+      <strong>Data wystawienia:</strong> <%= Date.current.strftime("%d.%m.%Y") %><br>
+      <% if @contract.sent_at %>
+        <strong>Data wysłania:</strong> <%= @contract.sent_at.strftime("%d.%m.%Y") %><br>
+      <% end %>
+      <% if @contract.delivery_date %>
+        <strong>Planowana realizacja:</strong> <%= @contract.delivery_date.strftime("%d.%m.%Y") %>
+      <% end %>
+    </div>
+    <div class="column">
+      <strong>Wartość umowy:</strong> <%= @contract.total_amount.format %><br>
+      <% if @contract.warranty_period %>
+        <strong>Gwarancja:</strong> <%= @contract.warranty_period %><br>
+      <% end %>
+      <strong>Warunki płatności:</strong> <%= @contract.payment_terms %>
+    </div>
+  </div>
+</div>
+
+<div class="customer-section">
+  <h3>Zamawiający (Klient)</h3>
+  <div class="two-columns">
+    <div class="column">
+      <strong><%= @lead.full_name %></strong><br>
+      <%= @lead.address if @lead.address.present? %><br>
+      Email: <%= @lead.email %><br>
+      Tel: <%= @lead.phone %>
+    </div>
+    <div class="column">
+      <% if @lead.investment_address.present? && @lead.investment_address != @lead.address %>
+        <strong>Adres inwestycji:</strong><br>
+        <%= @lead.investment_address %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="customer-section">
+  <h3>Wykonawca</h3>
+  <p>
+    <strong>Agent OZE Sp. z o.o.</strong><br>
+    ul. Przykładowa 123, 00-000 Warszawa<br>
+    NIP: 123-456-78-90, REGON: 123456789<br>
+    Kapitał zakładowy: 100.000,00 zł<br>
+    Sąd Rejonowy w Warszawie, KRS: 0000123456
+  </p>
+</div>
+
+<% if @contract.description.present? %>
+  <div class="content-section">
+    <h4>Przedmiot umowy</h4>
+    <p><%= simple_format(@contract.description) %></p>
+  </div>
+<% end %>
+
+<div class="content-section">
+  <h4>§ 1. Przedmiot umowy</h4>
+  <p>
+    Wykonawca zobowiązuje się do dostawy, montażu i uruchomienia systemu grzewczego 
+    na paliwo pelletowe w lokalizacji wskazanej przez Zamawiającego, zgodnie z 
+    załączoną specyfikacją techniczną.
+  </p>
+</div>
+
+<div class="content-section">
+  <h4>§ 2. Wartość umowy i warunki płatności</h4>
+  <ul>
+    <li>Wartość umowy: <strong><%= @contract.total_amount.format %></strong></li>
+    <li>Warunki płatności: <%= @contract.payment_terms %></li>
+    <li>Płatność obejmuje: dostawę, montaż, uruchomienie i instruktaż obsługi</li>
+    <li>Faktura VAT zostanie wystawiona po realizacji umowy</li>
+  </ul>
+</div>
+
+<div class="content-section">
+  <h4>§ 3. Terminy realizacji</h4>
+  <ul>
+    <% if @contract.delivery_date %>
+      <li>Planowany termin realizacji: <%= @contract.delivery_date.strftime("%d.%m.%Y") %></li>
+    <% end %>
+    <li>Dokładny harmonogram zostanie ustalony po podpisaniu umowy</li>
+    <li>Realizacja w terminie 2-4 tygodni od podpisania umowy</li>
+    <li>Uruchomienie systemu do 3 dni roboczych od montażu</li>
+  </ul>
+</div>
+
+<div class="content-section">
+  <h4>§ 4. Gwarancja i serwis</h4>
+  <ul>
+    <li>Gwarancja producenta na urządzenie: zgodnie z kartą gwarancyjną</li>
+    <% if @contract.warranty_period %>
+      <li>Gwarancja na montaż: <%= @contract.warranty_period %></li>
+    <% end %>
+    <li>Serwis gwarancyjny i pogwarancyjny dostępny</li>
+    <li>Instruktaż obsługi urządzenia w ramach montażu</li>
+    <li>Dokumentacja techniczna w języku polskim</li>
+  </ul>
+</div>
+
+<div class="content-section">
+  <h4>§ 5. Obowiązki stron</h4>
+  <p><strong>Zamawiający zobowiązuje się do:</strong></p>
+  <ul>
+    <li>Zapewnienia dostępu do miejsca montażu</li>
+    <li>Przygotowania instalacji elektrycznej zgodnie z wymaganiami</li>
+    <li>Zapewnienia miejsca składowania materiałów</li>
+    <li>Terminowej płatności zgodnie z umową</li>
+  </ul>
+  
+  <p><strong>Wykonawca zobowiązuje się do:</strong></p>
+  <ul>
+    <li>Profesjonalnego wykonania wszystkich prac</li>
+    <li>Użycia materiałów zgodnych ze specyfikacją</li>
+    <li>Sprzątania miejsca pracy po zakończeniu montażu</li>
+    <li>Przekazania dokumentacji i instrukcji obsługi</li>
+  </ul>
+</div>
+
+<% if @contract.special_conditions.present? %>
+  <div class="content-section">
+    <h4>§ 6. Postanowienia szczególne</h4>
+    <p><%= simple_format(@contract.special_conditions) %></p>
+  </div>
+<% end %>
+
+<div class="content-section">
+  <h4>§ 7. Postanowienia końcowe</h4>
+  <ul>
+    <li>Umowa wchodzi w życie z dniem podpisania przez obie strony</li>
+    <li>Wszelkie zmiany umowy wymagają formy pisemnej</li>
+    <li>W sprawach nieuregulowanych stosuje się przepisy Kodeksu Cywilnego</li>
+    <li>Spory rozstrzygane będą przez sąd właściwy dla siedziby Wykonawcy</li>
+  </ul>
+</div>
+
+<div class="content-section" style="margin-top: 40px;">
+  <div class="two-columns">
+    <div class="column">
+      <p><strong>ZAMAWIAJĄCY:</strong></p>
+      <br><br>
+      <p>..............................</p>
+      <p><%= @lead.full_name %></p>
+    </div>
+    <div class="column">
+      <p><strong>WYKONAWCA:</strong></p>
+      <br><br>
+      <p>..............................</p>
+      <p>Agent OZE Sp. z o.o.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>
+    <strong>Agent OZE Sp. z o.o.</strong> | 
+    Tel: +48 123 456 789 | 
+    Email: biuro@agent-oze.pl | 
+    www.agent-oze.pl
+  </p>
+  <p style="margin-top: 10px; font-size: 10px;">
+    Umowa została wygenerowana automatycznie w systemie Agent OZE.
+  </p>
+</div>

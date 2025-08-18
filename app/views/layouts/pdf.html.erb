@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Agent OZE - <%= yield(:title) %></title>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #333;
+      background: white;
+    }
+    
+    /* Header styles */
+    .header {
+      border-bottom: 3px solid #1e40af;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .company-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .logo-section h1 {
+      font-size: 24px;
+      color: #1e40af;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .logo-section p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .contact-info {
+      text-align: right;
+      font-size: 11px;
+      color: #666;
+    }
+    
+    /* Document info */
+    .document-info {
+      background: #f8fafc;
+      padding: 15px;
+      border-left: 4px solid #1e40af;
+      margin-bottom: 25px;
+    }
+    
+    .document-info h2 {
+      color: #1e40af;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    /* Customer info */
+    .customer-section {
+      margin-bottom: 25px;
+    }
+    
+    .customer-section h3 {
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 5px;
+    }
+    
+    /* Table styles */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    .items-table th {
+      background: #1e40af;
+      color: white;
+      padding: 10px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .items-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 11px;
+    }
+    
+    .items-table tr:nth-child(even) {
+      background: #f9fafb;
+    }
+    
+    .text-right {
+      text-align: right;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    /* Total section */
+    .total-section {
+      background: #1e40af;
+      color: white;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .total-section .amount {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    
+    /* Content sections */
+    .content-section {
+      margin-bottom: 25px;
+    }
+    
+    .content-section h4 {
+      color: #1e40af;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .content-section li {
+      padding: 3px 0;
+      position: relative;
+      padding-left: 15px;
+    }
+    
+    .content-section li::before {
+      content: "✓";
+      color: #10b981;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+    
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 10px;
+      color: #666;
+      text-align: center;
+    }
+    
+    /* Utility classes */
+    .mt-20 { margin-top: 20px; }
+    .mb-20 { margin-bottom: 20px; }
+    .text-sm { font-size: 11px; }
+    .text-gray { color: #666; }
+    .font-bold { font-weight: bold; }
+    
+    /* Page break */
+    .page-break {
+      page-break-before: always;
+    }
+    
+    /* Two column layout */
+    .two-columns {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .column {
+      width: 48%;
+    }
+  </style>
+</head>
+<body>
+  <%= yield %>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<% content_for :title, "Oferta #{@offer.number}" %>
+
+<div class="header">
+  <div class="company-info">
+    <div class="logo-section">
+      <h1>Agent OZE</h1>
+      <p>Twój partner w ekologicznym ogrzewaniu</p>
+    </div>
+    <div class="contact-info">
+      <strong>Agent OZE Sp. z o.o.</strong><br>
+      ul. Przykładowa 123<br>
+      00-000 Warszawa<br>
+      Tel: +48 123 456 789<br>
+      Email: biuro@agent-oze.pl<br>
+      NIP: 123-456-78-90
+    </div>
+  </div>
+</div>
+
+<div class="document-info">
+  <h2>Oferta handlowa nr <%= @offer.number %></h2>
+  <div class="two-columns">
+    <div class="column">
+      <strong>Data wystawienia:</strong> <%= Date.current.strftime("%d.%m.%Y") %><br>
+      <% if @offer.sent_at %>
+        <strong>Data wysłania:</strong> <%= @offer.sent_at.strftime("%d.%m.%Y") %><br>
+      <% end %>
+      <strong>Ważność oferty:</strong> 30 dni
+    </div>
+    <div class="column">
+      <strong>Status:</strong> <%= @offer.status.humanize %><br>
+      <strong>Waluta:</strong> <%= @offer.currency %><br>
+      <% if @offer.delivery_time.present? %>
+        <strong>Czas realizacji:</strong> <%= @offer.delivery_time %><br>
+      <% end %>
+      <% if @offer.warranty.present? %>
+        <strong>Gwarancja:</strong> <%= @offer.warranty %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="customer-section">
+  <h3>Dane klienta</h3>
+  <div class="two-columns">
+    <div class="column">
+      <strong><%= @lead.full_name %></strong><br>
+      <%= @lead.address if @lead.address.present? %><br>
+      Email: <%= @lead.email %><br>
+      Tel: <%= @lead.phone %>
+    </div>
+    <div class="column">
+      <% if @lead.investment_address.present? && @lead.investment_address != @lead.address %>
+        <strong>Adres inwestycji:</strong><br>
+        <%= @lead.investment_address %>
+      <% end %>
+      <% if @lead.product.present? %>
+        <br><strong>Produkt:</strong> <%= @lead.product %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @offer.description.present? %>
+  <div class="content-section">
+    <h4>Opis oferty</h4>
+    <p><%= simple_format(@offer.description) %></p>
+  </div>
+<% end %>
+
+<% if @offer.bonuses.present? %>
+  <div class="content-section">
+    <h4>Bonusy i dodatki</h4>
+    <p><%= simple_format(@offer.bonuses) %></p>
+  </div>
+<% end %>
+
+<% if @offer.offer_items.any? %>
+  <div class="content-section">
+    <h4>Szczegółowa specyfikacja</h4>
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Lp.</th>
+          <th>Nazwa produktu/usługi</th>
+          <th class="text-center">Ilość</th>
+          <th class="text-right">Cena jedn. (zł)</th>
+          <th class="text-right">Wartość (zł)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @offer.offer_items.each_with_index do |item, index| %>
+          <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td><%= item.name %></td>
+            <td class="text-center"><%= item.qty %></td>
+            <td class="text-right"><%= number_with_precision(item.unit_price, precision: 2, separator: ',', delimiter: ' ') %></td>
+            <td class="text-right"><%= number_with_precision(item.total_price, precision: 2, separator: ',', delimiter: ' ') %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<div class="total-section">
+  <div>Wartość całkowita oferty</div>
+  <div class="amount"><%= number_with_precision(@offer.total, precision: 2, separator: ',', delimiter: ' ') %> <%= @offer.currency %></div>
+</div>
+
+<div class="content-section">
+  <h4>Oferta zawiera</h4>
+  <ul>
+    <li>Piec pelletowy wysokiej jakości z gwarancją producenta</li>
+    <li>Profesjonalny montaż przez wykwalifikowanych specjalistów</li>
+    <li>Uruchomienie systemu i instruktaż obsługi</li>
+    <li>Dokumentację techniczną i certyfikaty</li>
+    <li>Serwis posprzedażny i wsparcie techniczne</li>
+    <li>Gwarancję na wykonane prace montażowe</li>
+  </ul>
+</div>
+
+<div class="content-section">
+  <h4>Warunki realizacji</h4>
+  <ul>
+    <li>Oferta ważna przez 30 dni od daty wystawienia</li>
+    <li>Termin realizacji: do uzgodnienia po podpisaniu umowy</li>
+    <li>Forma płatności: przelew bankowy lub gotówka</li>
+    <li>Możliwość finansowania w atrakcyjnych ratach</li>
+    <li>Bezpłatny dojazd i wycena na terenie województwa</li>
+    <li>Gwarancja producenta zgodnie z kartą gwarancyjną</li>
+  </ul>
+</div>
+
+<div class="content-section">
+  <h4>Dodatkowe informacje</h4>
+  <p>
+    <strong>Korzyści z pieców pelletowych:</strong><br>
+    • Ekologiczne i odnawialne źródło energii<br>
+    • Wysoka sprawność energetyczna (do 95%)<br>
+    • Automatyczne dozowanie paliwa<br>
+    • Niskie koszty eksploatacji<br>
+    • Możliwość podłączenia do centralnego ogrzewania<br>
+    • Nowoczesny design pasujący do każdego wnętrza
+  </p>
+  
+  <p class="mt-20">
+    <strong>Dlaczego warto wybrać Agent OZE?</strong><br>
+    • Doświadczenie i profesjonalizm<br>
+    • Kompleksowa obsługa od A do Z<br>
+    • Gwarancja jakości i terminowości<br>
+    • Konkurencyjne ceny bez ukrytych kosztów<br>
+    • Serwis i wsparcie techniczne<br>
+    • Zadowoleni klienci w całej Polsce
+  </p>
+</div>
+
+<div class="footer">
+  <p>
+    <strong>Agent OZE Sp. z o.o.</strong> | 
+    Tel: +48 123 456 789 | 
+    Email: biuro@agent-oze.pl | 
+    www.agent-oze.pl
+  </p>
+  <p class="mt-20">
+    Dziękujemy za zainteresowanie naszą ofertą. 
+    W razie pytań jesteśmy do Państwa dyspozycji!
+  </p>
+</div>

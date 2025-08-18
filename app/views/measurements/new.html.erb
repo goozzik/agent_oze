@@ -1,0 +1,190 @@
+<div class="max-w-2xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nowy pomiar
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        Lead: <%= @lead.full_name %>
+      </p>
+    </div>
+  </div>
+
+  <%= simple_form_for [@lead, @measurement], html: { class: "bg-white shadow-sm rounded-lg" } do |f| %>
+    <div class="px-4 py-5 sm:p-6">
+      
+      <!-- Basic Information -->
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= f.input :measurement_type, 
+              label: "Typ pomiaru",
+              collection: Measurement.measurement_types_for_select,
+              prompt: "Wybierz typ pomiaru",
+              input_html: { 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+              } %>
+          
+          <%= f.input :room_name, 
+              label: "Nazwa pomieszczenia/obszaru", 
+              input_html: { 
+                class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                placeholder: "np. Salon, Kotłownia, Cały budynek"
+              } %>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Wymiary</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <%= f.input :length, 
+                label: "Długość (m)", 
+                input_html: { 
+                  step: 0.01, 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                  placeholder: "np. 5.50"
+                } %>
+            
+            <%= f.input :width, 
+                label: "Szerokość (m)", 
+                input_html: { 
+                  step: 0.01, 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                  placeholder: "np. 4.20"
+                } %>
+            
+            <%= f.input :height, 
+                label: "Wysokość (m)", 
+                hint: "Opcjonalne",
+                input_html: { 
+                  step: 0.01, 
+                  class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                  placeholder: "np. 2.70"
+                } %>
+          </div>
+          
+          <!-- Calculated Values -->
+          <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="bg-blue-50 p-3 rounded-md">
+              <label class="block text-sm font-medium text-blue-900">Powierzchnia</label>
+              <div id="calculated-area" class="text-lg font-semibold text-blue-700">
+                - m²
+              </div>
+            </div>
+            
+            <div class="bg-green-50 p-3 rounded-md">
+              <label class="block text-sm font-medium text-green-900">Kubatura</label>
+              <div id="calculated-volume" class="text-lg font-semibold text-green-700">
+                - m³
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <div class="bg-yellow-50 p-3 rounded-md">
+              <label class="block text-sm font-medium text-yellow-900">Szacowane zapotrzebowanie na moc</label>
+              <div id="calculated-heating" class="text-lg font-semibold text-yellow-700">
+                - kW
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <%= f.input :notes, 
+            label: "Notatki", 
+            hint: "Dodatkowe informacje o pomiarze",
+            input_html: { 
+              rows: 4,
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              placeholder: "Uwagi dotyczące pomiaru, specyficzne cechy pomieszczenia..."
+            } %>
+      </div>
+    </div>
+
+    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 space-x-2">
+      <%= link_to "Anuluj", @lead, 
+          class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      <%= f.submit "Zapisz pomiar", 
+          class: "bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+  <% end %>
+
+  <!-- Measurement Help -->
+  <div class="mt-8 bg-green-50 border-l-4 border-green-400 p-4">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-green-700">
+          <strong>Wskazówki do pomiarów:</strong>
+        </p>
+        <ul class="text-sm text-green-600 mt-1 list-disc list-inside">
+          <li>Mierz pomieszczenia w najszerszych punktach</li>
+          <li>Uwzględnij załamania ścian i wnęki</li>
+          <li>Dla nieregularnych kształtów podziel na prostokąty</li>
+          <li>Zapotrzebowanie: 100W/m² (dom dobrze izolowany), 120-150W/m² (starszy budynek)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const lengthInput = document.querySelector('#measurement_length');
+  const widthInput = document.querySelector('#measurement_width');
+  const heightInput = document.querySelector('#measurement_height');
+  const typeInput = document.querySelector('#measurement_measurement_type');
+  
+  const areaDisplay = document.querySelector('#calculated-area');
+  const volumeDisplay = document.querySelector('#calculated-volume');
+  const heatingDisplay = document.querySelector('#calculated-heating');
+  
+  function updateCalculations() {
+    const length = parseFloat(lengthInput.value) || 0;
+    const width = parseFloat(widthInput.value) || 0;
+    const height = parseFloat(heightInput.value) || 0;
+    const type = typeInput.value;
+    
+    // Calculate area
+    const area = length * width;
+    areaDisplay.textContent = area > 0 ? area.toFixed(2) + ' m²' : '- m²';
+    
+    // Calculate volume
+    const volume = height > 0 ? length * width * height : 0;
+    volumeDisplay.textContent = volume > 0 ? volume.toFixed(2) + ' m³' : '- m³';
+    
+    // Calculate heating requirement
+    if (area > 0) {
+      let baseRequirement = area * 0.1; // 100W per m²
+      
+      // Adjust based on measurement type
+      switch(type) {
+        case 'room':
+          break; // No adjustment
+        case 'building':
+          baseRequirement *= 0.9; // Reduction for whole building efficiency
+          break;
+        case 'heating_zone':
+          baseRequirement *= 1.1; // Increase for specific zones
+          break;
+        case 'installation_space':
+          baseRequirement *= 0.8; // Reduce for technical spaces
+          break;
+      }
+      
+      heatingDisplay.textContent = baseRequirement.toFixed(2) + ' kW';
+    } else {
+      heatingDisplay.textContent = '- kW';
+    }
+  }
+  
+  if (lengthInput && widthInput && heightInput && typeInput) {
+    lengthInput.addEventListener('input', updateCalculations);
+    widthInput.addEventListener('input', updateCalculations);
+    heightInput.addEventListener('input', updateCalculations);
+    typeInput.addEventListener('change', updateCalculations);
+  }
+});
+</script>

@@ -1,0 +1,73 @@
+<div class="max-w-2xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Umów spotkanie
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">Klient: <%= @lead.full_name %></p>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Wróć", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= simple_form_for [@lead, @meeting], html: { class: "space-y-6" } do |form| %>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Data i godzina spotkania</label>
+            <%= form.datetime_local_field :scheduled_at, 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                min: Time.current.strftime("%Y-%m-%dT%H:%M") %>
+          </div>
+              
+          <%= form.input :location, 
+              label: "Miejsce spotkania", 
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                placeholder: "np. Dom klienta, Biuro firmy"
+              } %>
+        </div>
+
+        <%= form.input :notes, 
+            as: :text, 
+            label: "Notatki do spotkania", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 4,
+              placeholder: "Cel spotkania, co omówić, przygotowania..."
+            } %>
+
+        <div class="bg-blue-50 p-4 rounded-md">
+          <h4 class="text-sm font-medium text-blue-800 mb-2">Informacje o kliencie:</h4>
+          <div class="text-sm text-blue-700">
+            <p><strong>Email:</strong> <%= @lead.email %></p>
+            <p><strong>Telefon:</strong> <%= @lead.phone %></p>
+            <p><strong>Adres:</strong> <%= @lead.address %></p>
+            <% if @lead.investment_address.present? && @lead.investment_address != @lead.address %>
+              <p><strong>Adres inwestycji:</strong> <%= @lead.investment_address %></p>
+            <% end %>
+            <p><strong>Produkt:</strong> <%= @lead.product %></p>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+          <div class="flex">
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                Po umówieniu spotkania status leada zmieni się na "Meeting", 
+                a klient automatycznie otrzyma potwierdzenie na email.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Anuluj", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+          <%= form.submit "Umów spotkanie", class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

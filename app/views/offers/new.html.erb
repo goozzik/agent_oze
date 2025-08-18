@@ -1,0 +1,218 @@
+<div class="max-w-4xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nowa oferta
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">Klient: <%= @lead.full_name %></p>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Wróć", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= simple_form_for [@lead, @offer], html: { class: "space-y-6", id: "offer-form" } do |form| %>
+        <%= form.input :description, 
+            as: :text, 
+            label: "Opis oferty", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 3,
+              placeholder: "Krótki opis oferty, warunki, uwagi..."
+            } %>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <%= form.input :delivery_time, 
+              label: "Czas realizacji", 
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                placeholder: "np. 2-3 tygodnie"
+              } %>
+              
+          <%= form.input :warranty, 
+              label: "Gwarancja", 
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                placeholder: "np. 5 lat producenta"
+              } %>
+              
+          <div></div>
+        </div>
+
+        <%= form.input :bonuses, 
+            as: :text, 
+            label: "Bonusy i dodatki", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 2,
+              placeholder: "np. produkt premium DEFRO, dodatkowe akcesoria..."
+            } %>
+
+        <div class="border-t pt-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Pozycje oferty</h3>
+            <button type="button" id="add-item" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+              + Dodaj pozycję
+            </button>
+          </div>
+
+          <div id="offer-items" class="space-y-4">
+            <%= form.simple_fields_for :offer_items do |item_form| %>
+              <div class="offer-item bg-gray-50 p-4 rounded-lg">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+                  <div class="md:col-span-5">
+                    <%= item_form.input :name, 
+                        label: "Nazwa produktu/usługi", 
+                        input_html: { 
+                          class: "block w-full rounded-md border-gray-300 shadow-sm",
+                          placeholder: "np. Piec pelletowy 20kW"
+                        } %>
+                  </div>
+                  
+                  <div class="md:col-span-2">
+                    <%= item_form.input :qty, 
+                        label: "Ilość", 
+                        input_html: { 
+                          class: "block w-full rounded-md border-gray-300 shadow-sm quantity",
+                          value: 1,
+                          min: 1
+                        } %>
+                  </div>
+                  
+                  <div class="md:col-span-3">
+                    <%= item_form.input :unit_price, 
+                        label: "Cena jednostkowa (zł)", 
+                        input_html: { 
+                          class: "block w-full rounded-md border-gray-300 shadow-sm unit-price",
+                          step: 0.01,
+                          min: 0
+                        } %>
+                  </div>
+                  
+                  <div class="md:col-span-2 flex items-end">
+                    <button type="button" class="remove-item bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 mb-3">
+                      Usuń
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="mt-2 text-right">
+                  <span class="text-sm text-gray-600">Suma: </span>
+                  <span class="font-semibold item-total">0,00 zł</span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-medium text-gray-900">Wartość całkowita:</span>
+              <span class="text-xl font-bold text-blue-600" id="total-amount">0,00 zł</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 p-4 rounded-md">
+          <h4 class="text-sm font-medium text-blue-800 mb-2">Informacje o kliencie:</h4>
+          <div class="text-sm text-blue-700">
+            <p><strong>Email:</strong> <%= @lead.email %></p>
+            <p><strong>Telefon:</strong> <%= @lead.phone %></p>
+            <p><strong>Produkt:</strong> <%= @lead.product %></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Anuluj", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+          <%= form.submit "Utwórz ofertę", class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let itemIndex = <%= @offer.offer_items.length %>;
+  
+  // Add new item
+  document.getElementById('add-item').addEventListener('click', function() {
+    const container = document.getElementById('offer-items');
+    const template = `
+      <div class="offer-item bg-gray-50 p-4 rounded-lg">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+          <div class="md:col-span-5">
+            <label class="block text-sm font-medium text-gray-700">Nazwa produktu/usługi</label>
+            <input type="text" name="offer[offer_items_attributes][${itemIndex}][name]" 
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" 
+                   placeholder="np. Piec pelletowy 20kW">
+          </div>
+          
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700">Ilość</label>
+            <input type="number" name="offer[offer_items_attributes][${itemIndex}][qty]" 
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm quantity" 
+                   value="1" min="1">
+          </div>
+          
+          <div class="md:col-span-3">
+            <label class="block text-sm font-medium text-gray-700">Cena jednostkowa (zł)</label>
+            <input type="number" name="offer[offer_items_attributes][${itemIndex}][unit_price]" 
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm unit-price" 
+                   step="0.01" min="0">
+          </div>
+          
+          <div class="md:col-span-2 flex items-end">
+            <button type="button" class="remove-item bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 mb-3">
+              Usuń
+            </button>
+          </div>
+        </div>
+        
+        <div class="mt-2 text-right">
+          <span class="text-sm text-gray-600">Suma: </span>
+          <span class="font-semibold item-total">0,00 zł</span>
+        </div>
+      </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', template);
+    itemIndex++;
+    updateTotals();
+  });
+  
+  // Remove item and update totals
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-item')) {
+      e.target.closest('.offer-item').remove();
+      updateTotals();
+    }
+  });
+  
+  // Update totals when quantities or prices change
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('quantity') || e.target.classList.contains('unit-price')) {
+      updateTotals();
+    }
+  });
+  
+  function updateTotals() {
+    let grandTotal = 0;
+    
+    document.querySelectorAll('.offer-item').forEach(function(item) {
+      const qty = parseFloat(item.querySelector('.quantity').value) || 0;
+      const price = parseFloat(item.querySelector('.unit-price').value) || 0;
+      const total = qty * price;
+      
+      item.querySelector('.item-total').textContent = total.toFixed(2).replace('.', ',') + ' zł';
+      grandTotal += total;
+    });
+    
+    document.getElementById('total-amount').textContent = grandTotal.toFixed(2).replace('.', ',') + ' zł';
+  }
+  
+  // Initial calculation
+  updateTotals();
+});
+</script>

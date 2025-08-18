@@ -1,0 +1,143 @@
+<div class="max-w-4xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        Nowa umowa
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">Klient: <%= @lead.full_name %></p>
+      
+      <% if @latest_offer %>
+        <div class="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">
+          📄 Bazuje na ofercie: <%= @latest_offer.number %> (<%= @latest_offer.total.format %>)
+        </div>
+      <% end %>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Wróć", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <%= simple_form_for [@lead, @contract], html: { class: "space-y-6" } do |form| %>
+        
+        <!-- Basic Information -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <%= form.input :total_amount, 
+                as: :decimal,
+                label: "Wartość umowy (zł)", 
+                input_html: { 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                  step: "0.01",
+                  value: (@latest_offer&.total&.to_f if @latest_offer&.total)
+                } %>
+          </div>
+          
+          <div>
+            <%= form.input :delivery_date, 
+                as: :date,
+                label: "Data realizacji", 
+                input_html: { 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                  value: 1.month.from_now.to_date
+                } %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <%= form.input :payment_terms, 
+                label: "Warunki płatności", 
+                input_html: { 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                  placeholder: "np. 100% po realizacji, przelew 14 dni"
+                } %>
+          </div>
+          
+          <div>
+            <%= form.input :warranty_period, 
+                label: "Okres gwarancji", 
+                input_html: { 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                  placeholder: "np. 24 miesiące na montaż"
+                } %>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <%= form.input :description, 
+            as: :text, 
+            label: "Przedmiot umowy", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 4,
+              placeholder: "Szczegółowy opis przedmiotu umowy, dostawy i montażu...",
+              value: @latest_offer&.description
+            } %>
+
+        <!-- Terms -->
+        <%= form.input :terms, 
+            as: :text, 
+            label: "Dodatkowe warunki umowy", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 4,
+              placeholder: "Dodatkowe postanowienia, warunki szczególne..."
+            } %>
+
+        <!-- Special Conditions -->
+        <%= form.input :special_conditions, 
+            as: :text, 
+            label: "Warunki szczególne", 
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm", 
+              rows: 3,
+              placeholder: "Specjalne warunki realizacji, uwagi dodatkowe..."
+            } %>
+
+        <!-- Client Information Summary -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Dane klienta (informacyjnie)</h3>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <p><strong>Imię i nazwisko:</strong> <%= @lead.full_name %></p>
+              <p><strong>Email:</strong> <%= @lead.email %></p>
+              <p><strong>Telefon:</strong> <%= @lead.phone %></p>
+            </div>
+            <div>
+              <% if @lead.address.present? %>
+                <p><strong>Adres:</strong> <%= @lead.address %></p>
+              <% end %>
+              <% if @lead.investment_address.present? %>
+                <p><strong>Adres inwestycji:</strong> <%= @lead.investment_address %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Anuluj", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+          <%= form.submit "Utwórz umowę", class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-calculate total amount if not set
+  document.addEventListener('DOMContentLoaded', function() {
+    const totalAmountInput = document.querySelector('input[name="contract[total_amount]"]');
+    
+    // Format currency on blur
+    if (totalAmountInput) {
+      totalAmountInput.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value)) {
+          this.value = value.toFixed(2);
+        }
+      });
+    }
+  });
+</script>

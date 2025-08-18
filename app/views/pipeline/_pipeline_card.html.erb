@@ -1,0 +1,102 @@
+<div class="pipeline-card bg-white border border-gray-200 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow" 
+     data-lead-id="<%= lead.id %>">
+  
+  <!-- Lead Header -->
+  <div class="flex items-start justify-between mb-2">
+    <div class="flex-1 min-w-0">
+      <h4 class="text-sm font-medium text-gray-900 truncate">
+        <%= link_to lead.full_name, lead, class: "hover:text-blue-600" %>
+      </h4>
+      <p class="text-xs text-gray-500 truncate">
+        <%= lead.email %>
+      </p>
+    </div>
+    
+    <!-- Priority indicator -->
+    <% if lead.created_at > 1.day.ago %>
+      <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+        HOT
+      </span>
+    <% elsif lead.updated_at < 7.days.ago %>
+      <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+        OLD
+      </span>
+    <% end %>
+  </div>
+
+  <!-- Product Info -->
+  <% if lead.product.present? %>
+    <div class="mb-2">
+      <p class="text-xs text-gray-600">
+        🏠 <%= lead.product.truncate(30) %>
+      </p>
+    </div>
+  <% end %>
+
+  <!-- Value -->
+  <% latest_offer = lead.offers.order(created_at: :desc).first %>
+  <% if latest_offer %>
+    <div class="mb-2">
+      <p class="text-sm font-semibold text-green-600">
+        💰 <%= latest_offer.total.format %>
+      </p>
+      <% if latest_offer.decision_status.present? && latest_offer.decision_status != 'pending_decision' %>
+        <p class="text-xs text-gray-500">
+          <%= case latest_offer.decision_status
+              when 'customer_yes' then '✅ Zaakceptowane'
+              when 'customer_no' then '❌ Odrzucone'
+              when 'customer_maybe' then '🤔 Do przemyślenia'
+              else latest_offer.decision_status.humanize
+              end %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Last Activity -->
+  <div class="mb-2">
+    <p class="text-xs text-gray-500">
+      🕒 <%= time_ago_in_words(lead.updated_at) %> temu
+    </p>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="flex justify-between items-center">
+    <div class="flex space-x-1">
+      <!-- Meetings count -->
+      <% if lead.meetings.any? %>
+        <span class="inline-flex items-center text-xs text-purple-600">
+          📅 <%= lead.meetings.count %>
+        </span>
+      <% end %>
+      
+      <!-- Offers count -->
+      <% if lead.offers.any? %>
+        <span class="inline-flex items-center text-xs text-blue-600">
+          📄 <%= lead.offers.count %>
+        </span>
+      <% end %>
+      
+      <!-- Contracts count -->
+      <% if lead.contracts.any? %>
+        <span class="inline-flex items-center text-xs text-green-600">
+          📋 <%= lead.contracts.count %>
+        </span>
+      <% end %>
+    </div>
+    
+    <!-- Owner -->
+    <div class="text-xs text-gray-400">
+      👤 <%= lead.user&.email&.split('@')&.first || 'Nieprzypisany' %>
+    </div>
+  </div>
+
+  <!-- Source -->
+  <% if lead.source.present? %>
+    <div class="mt-2 pt-2 border-t border-gray-100">
+      <p class="text-xs text-gray-500">
+        📍 <%= lead.source %>
+      </p>
+    </div>
+  <% end %>
+</div>
