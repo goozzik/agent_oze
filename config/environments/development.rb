@@ -37,9 +37,15 @@ Rails.application.configure do
   # Configure default URL options - use ENV variables for flexibility
   default_url_options = {
     host: ENV['RAILS_HOST'] || 'localhost',
-    port: ENV['RAILS_PORT'] || 3000,
     protocol: ENV['RAILS_PROTOCOL'] || 'http'
-  }.compact
+  }
+  
+  # Only add port for localhost or when explicitly specified
+  if ENV['RAILS_HOST'].blank? || ENV['RAILS_PORT'].present?
+    default_url_options[:port] = ENV['RAILS_PORT'] || 3000
+  end
+  
+  default_url_options.compact!
   
   config.action_mailer.default_url_options = default_url_options
   Rails.application.routes.default_url_options = default_url_options
