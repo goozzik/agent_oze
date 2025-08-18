@@ -34,7 +34,15 @@ Rails.application.configure do
   # Configure mailer for development
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  # Configure default URL options - use ENV variables for flexibility
+  default_url_options = {
+    host: ENV['RAILS_HOST'] || 'localhost',
+    port: ENV['RAILS_PORT'] || 3000,
+    protocol: ENV['RAILS_PROTOCOL'] || 'http'
+  }.compact
+  
+  config.action_mailer.default_url_options = default_url_options
+  Rails.application.routes.default_url_options = default_url_options
   
   # Use letter_opener_web for mail preview
   config.action_mailer.delivery_method = :letter_opener_web
