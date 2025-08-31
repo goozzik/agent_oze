@@ -24,6 +24,15 @@
     </div>
     
     <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+      <!-- Energy Audit Button -->
+      <% if @lead.energy_audits.any? %>
+        <%= link_to "🔧 Zobacz audyt", [@lead, @lead.energy_audits.last], 
+            class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm" %>
+      <% else %>
+        <%= link_to "🔧 Audyt energetyczny", new_lead_energy_audit_path(@lead), 
+            class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm" %>
+      <% end %>
+      
       <!-- Status change buttons -->
       <div class="relative inline-block text-left">
         <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" id="status-menu">

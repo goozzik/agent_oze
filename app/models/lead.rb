@@ -8,6 +8,7 @@ class Lead < ApplicationRecord
   has_many :installation_notes, dependent: :destroy
   has_many :contracts, dependent: :destroy
   has_many :commissions, dependent: :destroy
+  has_many :energy_audits, dependent: :destroy
   has_many_attached :photos
 
   enum :status, {

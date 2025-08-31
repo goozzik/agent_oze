@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_18_125047) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_28_135155) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -79,6 +79,47 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_125047) do
     t.text "special_conditions"
     t.datetime "sent_at"
     t.index ["lead_id"], name: "index_contracts_on_lead_id"
+  end
+
+  create_table "energy_audits", force: :cascade do |t|
+    t.integer "lead_id", null: false
+    t.integer "construction_year"
+    t.decimal "usable_area"
+    t.string "building_registry_number"
+    t.string "current_heat_source"
+    t.text "insulation_info"
+    t.text "roof_info"
+    t.text "attic_info"
+    t.string "house_condition"
+    t.text "planned_investments"
+    t.decimal "current_energy_consumption"
+    t.string "location_info"
+    t.string "ventilation_type"
+    t.text "expansion_plans"
+    t.text "audit_results"
+    t.string "energy_class"
+    t.text "recommendations"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "wall_u_value"
+    t.decimal "window_u_value"
+    t.decimal "roof_u_value"
+    t.decimal "floor_u_value"
+    t.decimal "building_volume"
+    t.decimal "glazed_area_percentage"
+    t.decimal "air_tightness_n50"
+    t.decimal "ventilation_heat_recovery_efficiency"
+    t.string "climate_zone"
+    t.integer "heating_degree_days"
+    t.integer "external_design_temperature"
+    t.decimal "current_system_efficiency"
+    t.string "proposed_system_type"
+    t.decimal "proposed_system_efficiency"
+    t.string "fuel_type_current"
+    t.string "fuel_type_proposed"
+    t.decimal "primary_energy_factor_current"
+    t.decimal "primary_energy_factor_proposed"
+    t.index ["lead_id"], name: "index_energy_audits_on_lead_id"
   end
 
   create_table "installation_notes", force: :cascade do |t|
@@ -310,6 +351,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_18_125047) do
 
   add_foreign_key "boiler_calculations", "leads"
   add_foreign_key "boiler_calculations", "users", column: "created_by_id"
+  add_foreign_key "energy_audits", "leads"
   add_foreign_key "leads", "users"
   add_foreign_key "measurements", "leads"
   add_foreign_key "measurements", "users", column: "measured_by_id"

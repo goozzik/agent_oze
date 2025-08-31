@@ -1,0 +1,342 @@
+<div class="max-w-4xl mx-auto">
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate flex items-center">
+        <span class="mr-3">🔧</span>
+        MODUŁ 1: AI Audytor energetyczny / techniczny budynku
+      </h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Wstępna analiza techniczna budynku pod kątem kwalifikowaności do dotacji <strong>Czyste Powietrze</strong> oraz generowanie audytu energetycznego + ewentualnie świadectwa charakterystyki energetycznej (SCHE).
+      </p>
+    </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <%= link_to "Wróć", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+        <h3 class="text-lg font-medium text-blue-900 mb-2 flex items-center">
+          <span class="mr-2">📋</span>
+          INPUT (co podaje handlowiec):
+        </h3>
+        <ul class="text-sm text-blue-800 space-y-1">
+          <li>• Rok budowy budynku</li>
+          <li>• Powierzchnia użytkowa</li>
+          <li>• Księga wieczysta / adres / numer działki</li>
+          <li>• Stan obecnego źródła ciepła (np. kopciuch, piec 5 klasy, kominek)</li>
+          <li>• Informacje o izolacji, oknach, stropach, dachu</li>
+          <li>• Czy dom odebrany (jeśli nie: etap budowy)</li>
+          <li>• Przewidywana inwestycja: piec/pompa, okna, ocieplenie itd.</li>
+          <li>• Obecne zużycie prądu/gazu</li>
+          <li>• Lokalizacja (do przypisania strefy klimatycznej)</li>
+          <li>• Typ wentylacji (grawitacyjna, mechaniczna)</li>
+          <li>• Plany rozbudowy / podział budynku?</li>
+        </ul>
+      </div>
+
+      <%= simple_form_for [@lead, @energy_audit], html: { class: "space-y-6" } do |form| %>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :construction_year, 
+              label: "Rok budowy budynku *",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                min: 1800,
+                max: Date.current.year
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+          <%= form.input :usable_area, 
+              label: "Powierzchnia użytkowa (m²) *",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                step: 0.1,
+                min: 0
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+        </div>
+
+        <%= form.input :building_registry_number,
+            label: "Księga wieczysta / adres / numer działki",
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            },
+            wrapper_html: { class: "form-group" },
+            label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :current_heat_source,
+              label: "Obecne źródło ciepła *",
+              as: :select,
+              collection: EnergyAudit::HEAT_SOURCES.map { |k, v| [v, k] },
+              prompt: "Wybierz źródło ciepła",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+          <%= form.input :house_condition,
+              label: "Stan budynku *",
+              as: :select,
+              collection: EnergyAudit::HOUSE_CONDITIONS.map { |k, v| [v, k] },
+              prompt: "Oceń stan budynku",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <%= form.input :ventilation_type,
+              label: "Typ wentylacji *",
+              as: :select,
+              collection: EnergyAudit::VENTILATION_TYPES.map { |k, v| [v, k] },
+              prompt: "Wybierz typ wentylacji",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+          <%= form.input :current_energy_consumption,
+              label: "Obecne zużycie energii (kWh/rok)",
+              input_html: { 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+                step: 0.1,
+                min: 0
+              },
+              wrapper_html: { class: "form-group" },
+              label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+        </div>
+
+        <%= form.input :location_info,
+            label: "Lokalizacja (do przypisania strefy klimatycznej)",
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              placeholder: "np. Warszawa, Kraków, Gdańsk..."
+            },
+            wrapper_html: { class: "form-group" },
+            label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+        <%= form.input :insulation_info,
+            label: "Informacje o izolacji, oknach, stropach, dachu",
+            as: :text,
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              rows: 3,
+              placeholder: "Opisz stan izolacji, typ okien, stan dachu, stropów..."
+            },
+            wrapper_html: { class: "form-group" },
+            label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+        <%= form.input :planned_investments,
+            label: "Przewidywana inwestycja (piec/pompa, okna, ocieplenie itd.)",
+            as: :text,
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              rows: 3,
+              placeholder: "Opisz planowane modernizacje i inwestycje..."
+            },
+            wrapper_html: { class: "form-group" },
+            label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+        <%= form.input :expansion_plans,
+            label: "Plany rozbudowy / podział budynku?",
+            as: :text,
+            input_html: { 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+              rows: 2,
+              placeholder: "Czy planowana jest rozbudowa lub podział budynku?"
+            },
+            wrapper_html: { class: "form-group" },
+            label_html: { class: "block text-sm font-medium text-gray-700 mb-1" } %>
+
+        <!-- Advanced Professional Fields (Optional) -->
+        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+          <h4 class="text-lg font-medium text-purple-900 mb-3 flex items-center">
+            <span class="mr-2">🎯</span>
+            Tryb Profesjonalny (opcjonalne - dla dokładnych kalkulacji EP/EC/ET)
+          </h4>
+          <p class="text-sm text-purple-700 mb-4">
+            Dodatkowe parametry techniczne dla profesjonalnych kalkulacji energetycznych zgodnych z normami polskimi:
+          </p>
+          
+          <div id="advanced-fields" class="space-y-6" style="display: none;">
+            <!-- Building Physics -->
+            <div class="bg-white p-4 rounded-md border">
+              <h5 class="font-medium text-gray-900 mb-3">🏗️ Parametry fizyki budynku</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <%= form.input :wall_u_value,
+                    label: "U-value ściany (W/m²K)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.01,
+                      min: 0,
+                      placeholder: "np. 0.25"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :window_u_value,
+                    label: "U-value okien (W/m²K)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.01,
+                      min: 0,
+                      placeholder: "np. 1.1"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :roof_u_value,
+                    label: "U-value dachu (W/m²K)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.01,
+                      min: 0,
+                      placeholder: "np. 0.15"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                <%= form.input :floor_u_value,
+                    label: "U-value podłogi (W/m²K)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.01,
+                      min: 0,
+                      placeholder: "np. 0.3"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :building_volume,
+                    label: "Objętość budynku (m³)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.1,
+                      min: 0,
+                      placeholder: "np. 400"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :glazed_area_percentage,
+                    label: "Przeszklenie (%)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 1,
+                      min: 0,
+                      max: 100,
+                      placeholder: "np. 15"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+              </div>
+            </div>
+            
+            <!-- Heating System Details -->
+            <div class="bg-white p-4 rounded-md border">
+              <h5 class="font-medium text-gray-900 mb-3">🔥 System grzewczy</h5>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <%= form.input :current_system_efficiency,
+                    label: "Sprawność obecnego systemu (%)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.01,
+                      min: 0,
+                      max: 100,
+                      placeholder: "np. 75"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :proposed_system_type,
+                    label: "Proponowany system",
+                    as: :select,
+                    collection: [
+                      ['Piec pelletowy', 'pellets'],
+                      ['Pompa ciepła', 'heat_pump'],
+                      ['Kotełł gazowy kondensacyjny', 'gas'],
+                      ['Piec na biomasę', 'biomass']
+                    ],
+                    prompt: "Wybierz proponowany system",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+                    
+                <%= form.input :proposed_system_efficiency,
+                    label: "Sprawność nowego systemu (%)",
+                    input_html: { 
+                      class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm",
+                      step: 0.1,
+                      min: 0,
+                      max: 500,
+                      placeholder: "np. 92"
+                    },
+                    wrapper_html: { class: "form-group" },
+                    label_html: { class: "block text-xs font-medium text-gray-600 mb-1" } %>
+              </div>
+            </div>
+            
+            <div class="text-xs text-purple-600">
+              💡 Podanie dokładnych parametrów technicznych pozwoli na generowanie profesjonalnych kalkulacji EP/EC/ET zgodnych z polskimi normami energetycznymi.
+            </div>
+          </div>
+          
+          <button type="button" onclick="toggleAdvancedFields()" class="mt-3 text-sm text-purple-600 hover:text-purple-800 underline">
+            Pokaż/ukryj pola profesjonalne
+          </button>
+        </div>
+
+        <div class="bg-green-50 p-4 rounded-lg">
+          <h4 class="text-lg font-medium text-green-900 mb-2 flex items-center">
+            <span class="mr-2">🤖</span>
+            AI Analiza automatyczna
+          </h4>
+          <p class="text-sm text-green-800">
+            Po zapisaniu formularza, system automatycznie przeanalizuje podane dane i wygeneruje:
+          </p>
+          <ul class="text-sm text-green-800 mt-2 space-y-1">
+            <li>• Klasę energetyczną budynku (A+ do G)</li>
+            <li>• Roczne zapotrzebowanie na energię</li>
+            <li>• Kalkulacje EP/EC/ET (przy podaniu parametrów profesjonalnych)</li>
+            <li>• Analiza kosztów i oszczędności before/after</li>
+            <li>• Rekomendacje modernizacji</li>
+            <li>• Kwalifikację do programu Czyste Powietrze</li>
+            <li>• Projekt świadectwa energetycznego (SCHE)</li>
+          </ul>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <%= link_to "Anuluj", @lead, class: "bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400" %>
+          <%= form.submit "🚀 Przeprowadź audyt AI", class: "bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 font-medium" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleAdvancedFields() {
+    const fields = document.getElementById('advanced-fields');
+    const button = event.target;
+    
+    if (fields.style.display === 'none') {
+      fields.style.display = 'block';
+      button.textContent = 'Ukryj pola profesjonalne';
+    } else {
+      fields.style.display = 'none';
+      button.textContent = 'Pokaż pola profesjonalne';
+    }
+  }
+</script>

@@ -42,6 +42,11 @@ Rails.application.routes.draw do
     resources :measurements, except: [:index]
     resources :boiler_calculations, except: [:index]
     resources :installation_notes, except: [:index]
+    resources :energy_audits, except: [:index] do
+      member do
+        get :download_pdf
+      end
+    end
     resources :offers do
       member do
         post :send_offer
